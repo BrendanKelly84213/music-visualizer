@@ -3,10 +3,9 @@
 #include <GLFW/glfw3.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
-#include <memory>
-#include <csignal>
 #include "include/Window.h"
 #include "Music.h"
+#include "Renderer.h"
 
 int main()
 {
@@ -47,7 +46,9 @@ int main()
             Mix_PlayMusic(music.ptr(), -1);
         }
 
+        Renderer::clear();
         glfwPollEvents();
+        glfwSwapBuffers(windowPtr);
     }
 
     return 0;

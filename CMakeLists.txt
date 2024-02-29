@@ -14,6 +14,8 @@ add_executable(music-visualizer main.cpp
         /usr/local/src/glad/src/glad.c
         IndexBuffer.h
         IndexBuffer.cpp
+        Renderer.cpp
+        Renderer.h
         include/Window.cpp
         include/Window.h
         Music.cpp
