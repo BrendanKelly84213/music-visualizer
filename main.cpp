@@ -6,17 +6,17 @@
 int main()
 {
     Window window(800, 600, "window");
+    window.init();
 
-    // Initialize GLAD
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
 
-    auto glfwWindowPtr = window.window();
-    while (!glfwWindowShouldClose(glfwWindowPtr)) {
-        if (glfwGetKey(glfwWindowPtr, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-            glfwSetWindowShouldClose(window.window(), true);
+    auto windowPtr = window.ptr();
+    while (!glfwWindowShouldClose(windowPtr)) {
+        if (glfwGetKey(windowPtr, GLFW_KEY_ESCAPE) == GLFW_KEY_DOWN) {
+            glfwSetWindowShouldClose(windowPtr, true);
         }
         glfwPollEvents();
     }
