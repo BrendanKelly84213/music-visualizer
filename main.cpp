@@ -6,6 +6,7 @@
 #include <memory>
 #include <csignal>
 #include "include/Window.h"
+#include "Music.h"
 
 int main()
 {
@@ -30,8 +31,8 @@ int main()
         return 1;
     }
 
-    auto music = Mix_LoadMUS("/home/brendan/dev/music-visualizer/hoty.wav");
-    if (music == nullptr) {
+    Music music;
+    if (!music.load("/home/brendan/dev/music-visualizer/hoty.wav")) {
         std::cout << "Failed to load music file " << Mix_GetError() << '\n';
         return 1;
     }
@@ -43,14 +44,11 @@ int main()
         }
 
         if (!Mix_PlayingMusic()) {
-            Mix_PlayMusic(music, -1);
+            Mix_PlayMusic(music.ptr(), -1);
         }
 
         glfwPollEvents();
     }
-
-    Mix_FreeMusic(music);
-    music = nullptr;
 
     return 0;
 }

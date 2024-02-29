@@ -16,6 +16,8 @@ add_executable(music-visualizer main.cpp
         IndexBuffer.cpp
         include/Window.cpp
         include/Window.h
+        Music.cpp
+        Music.h
 )
 
 target_link_libraries(music-visualizer ${OpenGlLinkers} ${SDL_Linkers})
