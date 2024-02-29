@@ -39,7 +39,7 @@ int main()
 
     auto windowPtr = window.ptr();
     while (!glfwWindowShouldClose(windowPtr)) {
-        if (glfwGetKey(windowPtr, GLFW_KEY_ESCAPE) == GLFW_KEY_DOWN) {
+        if (glfwGetKey(windowPtr, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
             glfwSetWindowShouldClose(windowPtr, true);
         }
 
