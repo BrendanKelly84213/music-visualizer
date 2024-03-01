@@ -46,16 +46,17 @@ int main()
     }
 
     float vertices[] = {
-        -0.50f, -0.25f, 0.0f,
-        0.00f, -0.25f, 0.0f,
-        -0.25f,  0.25f, 0.0f,
+        -0.50f, -0.25f, 0.0f, 0.3f, 0.4f, 0.1f,
+        0.00f, -0.25f, 0.0f, 0.3f, 0.3f, 0.2f,
+        -0.25f,  0.25f, 0.0f, 0.1f, 0.4f, 0.5f,
     };
 
     VertexArray vertexArray;
     VertexAttributes vertexAttributes;
     VertexBuffer vertexBuffer(vertices, sizeof(vertices));
 
-    vertexAttributes.push(3, GL_FLOAT, GL_FALSE);
+    vertexAttributes.push<float>(3);
+    vertexAttributes.push<float>(3);
     vertexAttributes.enable(vertexBuffer, vertexArray);
 
     auto windowPtr = window.ptr();

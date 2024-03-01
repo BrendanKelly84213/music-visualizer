@@ -12,12 +12,24 @@ void VertexAttributes::push(int size, unsigned int type, unsigned char normalize
             m_stride += size * sizeof(float);
             sizeOfType = sizeof(GLfloat);
             break;
+        case GL_UNSIGNED_INT:
+            m_stride += size * sizeof(unsigned int);
+            sizeOfType = sizeof(GLuint);
+            break;
         default: break;
     }
 
     m_attributes.push_back({ size, type, normalized, sizeOfType });
-    m_index++;
 }
+
+// Just playing around with templates and different implementations of this API
+// This is a workaround for templating with
+// template<typename T>
+// VertexAttributes::push(...);
+// template<>
+// VertexAttributes::push<float>() etc... which does not work in class scope using gcc
+// Has the benefit of a slightly nicer API to use, less readable implementation
+
 
 void VertexAttributes::enable(VertexBuffer const& vertexBuffer, VertexArray const& vertexArray)
 {
