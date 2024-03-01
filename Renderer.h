@@ -12,6 +12,7 @@ public:
     Renderer() = default;
     static void clear(GLbitfield mask = GL_COLOR_BUFFER_BIT);
     static void drawElements(int count, const void* indices = nullptr);
+    static void drawArrays(int first, int count);
 private:
 };
 

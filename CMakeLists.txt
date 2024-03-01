@@ -16,10 +16,17 @@ add_executable(music-visualizer main.cpp
         IndexBuffer.cpp
         Renderer.cpp
         Renderer.h
-        include/Window.cpp
-        include/Window.h
+        Window.cpp
+        Window.h
         Music.cpp
         Music.h
+        Shader.cpp
+        Shader.h
+        VertexArray.h
+        VertexArray.cpp
+        VertexBuffer.cpp
+        VertexAttributes.cpp
+        VertexAttributes.h
 )
 
 target_link_libraries(music-visualizer ${OpenGlLinkers} ${SDL_Linkers})

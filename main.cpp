@@ -3,9 +3,12 @@
 #include <GLFW/glfw3.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
-#include "include/Window.h"
+#include "Window.h"
 #include "Music.h"
 #include "Renderer.h"
+#include "Shader.h"
+#include "VertexArray.h"
+#include "VertexAttributes.h"
 
 int main()
 {
@@ -36,6 +39,25 @@ int main()
         return 1;
     }
 
+    Shader shaderProgram;
+    if (!shaderProgram.load("/home/brendan/dev/music-visualizer/vertex-shader.glsl", "/home/brendan/dev/music-visualizer/fragment-shader.glsl")) {
+        std::cout << "Failed to load shader program\n";
+        return 1;
+    }
+
+    float vertices[] = {
+        -0.50f, -0.25f, 0.0f,
+        0.00f, -0.25f, 0.0f,
+        -0.25f,  0.25f, 0.0f,
+    };
+
+    VertexArray vertexArray;
+    VertexAttributes vertexAttributes;
+    VertexBuffer vertexBuffer(vertices, sizeof(vertices));
+
+    vertexAttributes.push(3, GL_FLOAT, GL_FALSE);
+    vertexAttributes.enable(vertexBuffer, vertexArray);
+
     auto windowPtr = window.ptr();
     while (!glfwWindowShouldClose(windowPtr)) {
         if (glfwGetKey(windowPtr, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
@@ -47,6 +69,11 @@ int main()
         }
 
         Renderer::clear();
+
+        vertexArray.bind();
+        shaderProgram.use();
+        Renderer::drawArrays(0, 3);
+
         glfwPollEvents();
         glfwSwapBuffers(windowPtr);
     }
