@@ -4,6 +4,7 @@ project(music-visualizer)
 set(CMAKE_CXX_STANDARD 17)
 set(OpenGlLinkers -lglfw3 -lGL -lX11 -lpthread -lXrandr -lXi -ldl)
 set(SDL_Linkers -lSDL2 -lSDL2_mixer)
+set(LibSndFileLinkers -lsndfile)
 
 link_directories("/usr/local/src/glfw-3.3.9/build/src")
 include_directories("/usr/local/src/glfw-3.3.9/include")
@@ -27,6 +28,8 @@ add_executable(music-visualizer main.cpp
         VertexBuffer.cpp
         VertexAttributes.cpp
         VertexAttributes.h
+        SoundData.cpp
+        SoundData.h
 )
 
-target_link_libraries(music-visualizer ${OpenGlLinkers} ${SDL_Linkers})
+target_link_libraries(music-visualizer ${OpenGlLinkers} ${SDL_Linkers} ${LibSndFileLinkers})

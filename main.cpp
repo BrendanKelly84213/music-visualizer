@@ -3,12 +3,16 @@
 #include <GLFW/glfw3.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
+#include <sndfile.h>
+#include <memory>
+#include <array>
 #include "Window.h"
 #include "Music.h"
 #include "Renderer.h"
 #include "Shader.h"
 #include "VertexArray.h"
 #include "VertexAttributes.h"
+#include "SoundData.h"
 
 int main()
 {
@@ -36,6 +40,12 @@ int main()
     Music music;
     if (!music.load("/home/brendan/dev/music-visualizer/hoty.wav")) {
         std::cout << "Failed to load music file " << Mix_GetError() << '\n';
+        return 1;
+    }
+
+    auto data = SoundData::create("/home/brendan/dev/music-visualizer/hoty.wav");
+    if (!data.has_value()) {
+        std::cout << "Failed to get sound data from file\n";
         return 1;
     }
 
