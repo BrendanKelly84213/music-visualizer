@@ -3,23 +3,24 @@
 //
 
 #include <sndfile.h>
+#include <variant>
 #include "SoundData.h"
 
-SoundData::SoundData(const int64_t count, SNDFILE* sndfile)
+SoundData::SoundData(const int64_t count, SNDFILE* sndfile, const SF_INFO& info)
+: m_count(count), m_info(info)
 {
-    m_count = count;
     m_buffer = std::make_unique<float[]>(m_count);
     m_frames = sf_read_float(sndfile, m_buffer.get(), m_count);
     sf_close(sndfile);
 }
 
-std::optional<SoundData> SoundData::create(const std::string& filepath)
+std::variant<Error, SoundData> SoundData::create(const std::string& filepath)
 {
     SF_INFO info;
     SNDFILE* sndfile = sf_open(filepath.c_str(), SFM_READ, &info);
     if (sndfile == nullptr) {
-        return {};
+        return Error(sf_strerror(sndfile));
     }
     auto const count = info.frames * info.channels;
-    return std::optional<SoundData>(SoundData(count, sndfile));
+    return SoundData(count, sndfile, info);
 }

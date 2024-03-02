@@ -43,11 +43,12 @@ int main()
         return 1;
     }
 
-    auto data = SoundData::create("/home/brendan/dev/music-visualizer/hoty.wav");
-    if (!data.has_value()) {
-        std::cout << "Failed to get sound data from file\n";
+    auto data_or_error = SoundData::create("/home/brendan/dev/music-visualizer/hoty.wav");
+    if (std::holds_alternative<Error>(data_or_error)) {
+        std::cout << "Failed to get sound data from file: " << std::get<Error>(data_or_error).m_message << '\n';
         return 1;
     }
+    auto data = std::get<SoundData>(std::move(data_or_error));
 
     Shader shaderProgram;
     if (!shaderProgram.load("/home/brendan/dev/music-visualizer/vertex-shader.glsl", "/home/brendan/dev/music-visualizer/fragment-shader.glsl")) {

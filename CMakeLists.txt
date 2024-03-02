@@ -30,6 +30,8 @@ add_executable(music-visualizer main.cpp
         VertexAttributes.h
         SoundData.cpp
         SoundData.h
+        Error.cpp
+        Error.h
 )
 
 target_link_libraries(music-visualizer ${OpenGlLinkers} ${SDL_Linkers} ${LibSndFileLinkers})
