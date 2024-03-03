@@ -15,7 +15,7 @@ void Renderer::drawElements(int count, const void* indices)
     glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, indices);
 }
 
-void Renderer::drawArrays(int first, int count)
+void Renderer::drawArrays(int first, int count, unsigned int mode)
 {
-    glDrawArrays(GL_TRIANGLES, first, count);
+    glDrawArrays(mode, first, count);
 }
