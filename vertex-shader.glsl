@@ -1,13 +1,10 @@
 #version 330 core
-attribute vec2 coord2d;
+layout (location = 0) in vec3 aPos;
 
-out vec4 ourColor;
 out vec3 ourPosition;
-uniform float offset_x;
-uniform float scale_x;
 
 void main()
 {
-    gl_Position = vec4((coord2d.x + offset_x) * scale_x, coord2d.y , 0, 1.0);
-    ourColor = vec4(coord2d.xy / 2.0 + 0.5, 1, 1);
+    gl_Position = vec4(aPos, 1.0);
+    ourPosition = aPos;
 }

@@ -5,7 +5,7 @@
 #include <iostream>
 #include <glad/glad.h>
 
-#include "include/stb_image.h"
+#include "external/stb_image.h"
 
 #include "Texture.h"
 
