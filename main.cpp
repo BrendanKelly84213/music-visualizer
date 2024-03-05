@@ -4,8 +4,9 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
 #include <sndfile.h>
-#include <memory>
 #include <array>
+#include <fftw3.h>
+
 #include "Window.h"
 #include "Music.h"
 #include "Renderer.h"
@@ -15,9 +16,12 @@
 #include "SoundData.h"
 #include "IndexBuffer.h"
 
+const unsigned int dataBlockSize = 16384;
+
+
 #define TRY(expression, returnValue)                                        \
     ({                                                                      \
-        auto&& temporary = expression;                                       \
+        auto&& temporary = expression;                                      \
         if (std::holds_alternative<Error>(std::move(temporary))) {          \
           std::cout << "Error: " << std::get<Error>(temporary).m_message;   \
           return returnValue;                                               \
@@ -84,8 +88,14 @@ int main()
     vertexAttributes.enable(vertexBuffer, vertexArray);
 
     auto windowPtr = window.ptr();
+    auto* in = fftw_alloc_complex(dataBlockSize);
+    auto* out = fftw_alloc_complex(dataBlockSize);
+    double lastTime = 0.0f;
+    size_t numFrames = 0;
     while (!glfwWindowShouldClose(windowPtr)) {
         auto currentTime = glfwGetTime();
+        auto deltaTime = currentTime - lastTime;
+        lastTime = currentTime;
         if (glfwGetKey(windowPtr, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
             glfwSetWindowShouldClose(windowPtr, true);
         }
@@ -93,6 +103,36 @@ int main()
         if (!Mix_PlayingMusic()) {
             Mix_PlayMusic(music.ptr(), -1);
         }
+
+        std::cout << "deltaTime: " << deltaTime << '\n';
+        auto samplesSinceLastFrame = samplerate * deltaTime;
+        std::cout << "samplesSinceLastFrame: " << samplesSinceLastFrame << '\n';
+        // Round samplesPerFrame up to the nearest power of 2
+        auto power = std::ceil(std::log2(samplesSinceLastFrame));
+        auto samplesPerFramePowerOf2 = static_cast<size_t>(std::pow(2, power));
+        std::cout << "samplesPerFrame (rounded up to nearest power of 2): " << samplesPerFramePowerOf2 << '\n';
+
+        std::cout << "Before: ";
+        for (size_t i = 0; i < samplesPerFramePowerOf2; ++i) {
+            auto dataIndex = i + numFrames * samplesPerFramePowerOf2;
+            in[i][0] = data.at(dataIndex);
+            in[i][1] = 0;
+            std::cout << "{ real: " << in[i][0] << ", complex: " << in[i][1] << " } ";
+        }
+        std::cout << "\n------------------------\n";
+
+        auto* p = fftw_plan_dft_1d(dataBlockSize, in, out, FFTW_FORWARD, FFTW_ESTIMATE);
+
+        double magnitudes[dataBlockSize];
+        std::cout << "After: ";
+        for (size_t i = 0; i < samplesPerFramePowerOf2; ++i) {
+            magnitudes[i] = std::sqrt(out[i][0] * out[i][0] + out[i][1] * out[i][1]);
+            std::cout << "{ real: " << out[i][0] << ", complex: " << out[i][1] << ", magnitude: " << magnitudes[i] << " } ";
+        }
+        std::cout << "\n------------------------\n";
+
+        fftw_execute(p);
+        fftw_destroy_plan(p);
 
         int width;
         int height;
@@ -106,7 +146,10 @@ int main()
 
         glfwPollEvents();
         glfwSwapBuffers(windowPtr);
+        numFrames++;
     }
+    fftw_free(in);
+    fftw_free(out);
 
     return 0;
 }

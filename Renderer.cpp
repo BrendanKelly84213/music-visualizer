@@ -19,3 +19,8 @@ void Renderer::drawArrays(int first, int count, unsigned int mode)
 {
     glDrawArrays(mode, first, count);
 }
+
+void Renderer::drawLine(glm::vec2 start, glm::vec2 end)
+{
+
+}
