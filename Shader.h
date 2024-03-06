@@ -8,6 +8,7 @@
 #include <string>
 #include <glm/glm.hpp>
 #include <atomic>
+#include "Error.h"
 
 class Shader {
 public:
@@ -15,8 +16,8 @@ public:
     void use() const;
     int compileShader(const std::string& source, unsigned int typeFlag);
     int linkProgram(unsigned int vertexShader, unsigned int fragmentShader);
-    bool load(const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
-    bool loadFromRaw(const std::string &vertexShaderCode, const std::string &fragmentShaderCode);
+    Result<unsigned int> load(const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
+    Result<unsigned int> loadFromRaw(const std::string &vertexShaderCode, const std::string &fragmentShaderCode);
 
     template<typename T>
     void setUniform(const std::string& name, T value)

@@ -50,7 +50,7 @@ static std::string readFileToString(const std::string& filepath)
     return buffer.str();
 }
 
-bool Shader::load(const std::string &vertexShaderPath, const std::string &fragmentShaderPath)
+Result<unsigned int> Shader::load(const std::string &vertexShaderPath, const std::string &fragmentShaderPath)
 {
     std::string vertexShaderCode = readFileToString(vertexShaderPath);
     std::string fragmentShaderCode = readFileToString(fragmentShaderPath);
@@ -58,19 +58,16 @@ bool Shader::load(const std::string &vertexShaderPath, const std::string &fragme
     return loadFromRaw(vertexShaderCode, fragmentShaderCode);
 }
 
-bool Shader::loadFromRaw(const std::string& vertexShaderCode, const std::string& fragmentShaderCode)
+Result<unsigned int> Shader::loadFromRaw(const std::string& vertexShaderCode, const std::string& fragmentShaderCode)
 {
-    // FIXME: Propagate errors
     int vertexShader = compileShader(vertexShaderCode, GL_VERTEX_SHADER);
     if (vertexShader < 0) {
-        std::cout << "Failed to compile vertexShader: " << m_infoLog << '\n';
-        return false;
+        return Error("Failed to compile vertexShader: " + std::string(m_infoLog));
     }
 
     int fragmentShader = compileShader(fragmentShaderCode, GL_FRAGMENT_SHADER);
     if (fragmentShader < 0) {
-        std::cout << "Failed to compile fragmentShader: " << m_infoLog << '\n';
-        return false;
+        return Error("Failed to compile fragmentShader: " + std::string(m_infoLog));
     }
 
     m_id = linkProgram(vertexShader, fragmentShader);
@@ -78,7 +75,7 @@ bool Shader::loadFromRaw(const std::string& vertexShaderCode, const std::string&
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
-    return true;
+    return m_id;
 }
 
 void Shader::use() const

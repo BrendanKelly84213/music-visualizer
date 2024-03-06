@@ -19,7 +19,7 @@ const unsigned int dataBlockSize = 16384;
     ({                                                                      \
         auto&& temporary = expression;                                      \
         if (std::holds_alternative<Error>(std::move(temporary))) {          \
-          std::cout << "Error: " << std::get<Error>(temporary).m_message;   \
+          std::cout << "Error: " << std::get<Error>(temporary).message();   \
           return returnValue;                                               \
         }                                                                   \
         std::get<SoundData>(std::move(temporary));                          \

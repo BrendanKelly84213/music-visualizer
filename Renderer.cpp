@@ -50,7 +50,9 @@ void Renderer::drawRectangle(float rectangleWidth, float rectangleHeight, glm::v
     )";
 
     Shader shaderProgram;
-    if (!shaderProgram.loadFromRaw(vertexShaderSrc, fragmentShaderSrc)) {
+    auto result = shaderProgram.loadFromRaw(vertexShaderSrc, fragmentShaderSrc);
+    if (result.isError()) {
+        std::cout << result.error().message() << '\n';
         return;
     }
 
