@@ -55,6 +55,12 @@ bool Shader::load(const std::string &vertexShaderPath, const std::string &fragme
     std::string vertexShaderCode = readFileToString(vertexShaderPath);
     std::string fragmentShaderCode = readFileToString(fragmentShaderPath);
 
+    return loadFromRaw(vertexShaderCode, fragmentShaderCode);
+}
+
+bool Shader::loadFromRaw(const std::string& vertexShaderCode, const std::string& fragmentShaderCode)
+{
+    // FIXME: Propagate errors
     int vertexShader = compileShader(vertexShaderCode, GL_VERTEX_SHADER);
     if (vertexShader < 0) {
         std::cout << "Failed to compile vertexShader: " << m_infoLog << '\n';

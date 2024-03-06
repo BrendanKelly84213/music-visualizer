@@ -13,7 +13,10 @@ class Shader {
 public:
     ~Shader();
     void use() const;
+    int compileShader(const std::string& source, unsigned int typeFlag);
+    int linkProgram(unsigned int vertexShader, unsigned int fragmentShader);
     bool load(const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
+    bool loadFromRaw(const std::string &vertexShaderCode, const std::string &fragmentShaderCode);
 
     template<typename T>
     void setUniform(const std::string& name, T value)
@@ -23,15 +26,14 @@ public:
             glUniform1f(location, value);
         } else if constexpr (std::is_same_v<glm::vec2, T>) {
             glUniform2f(location, value.x, value.y);
+        } else if constexpr (std::is_same_v<glm::vec4, T>) {
+            glUniform4f(location, value.x, value.y, value.z, value.w);
         }
     }
 
 private:
     unsigned int m_id {0};
     char m_infoLog[512] {};
-
-    int compileShader(const std::string& source, unsigned int typeFlag);
-    int linkProgram(unsigned int vertexShader, unsigned int fragmentShader);
 };
 
 

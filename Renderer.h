@@ -14,8 +14,10 @@ public:
     static void clear(GLbitfield mask = GL_COLOR_BUFFER_BIT);
     static void drawElements(int count, const void* indices = nullptr);
     static void drawArrays(int first, int count, unsigned int mode = GL_TRIANGLES);
-    void drawLine(glm::vec2 start, glm::vec2 end);
+    // Normalized values
+    void drawRectangle(float rectangleWidth, float rectangleHeight, glm::vec2 bottomLeftPosition);
 private:
+
 };
 
 
