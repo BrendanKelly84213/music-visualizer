@@ -13,7 +13,7 @@
 #include "Shader.h"
 #include "SoundData.h"
 
-const unsigned int dataBlockSize = 16384;
+const unsigned int dataBlockSize = 1024;
 
 #define TRY(expression, returnValue)                                        \
     ({                                                                      \
@@ -79,17 +79,14 @@ int main()
         }
 
         auto samplesSinceLastFrame = static_cast<size_t>(samplerate * deltaTime);
-        // Round samplesPerFrame down to the nearest power of 2
-        auto power = std::floor(std::log2(samplesSinceLastFrame));
-        auto samplesPerFramePowerOf2 = static_cast<size_t>(std::pow(2, power));
-
-        for (size_t i = 0; i < samplesPerFramePowerOf2; ++i) {
+        dataIndex += samplesSinceLastFrame;
+        for (size_t i = 0; i < dataBlockSize; ++i) {
             in[i][0] = data.at(dataIndex);
             in[i][1] = 0;
             dataIndex++;
         }
 
-        fftw_plan_s* p = fftw_plan_dft_1d(static_cast<int>(samplesPerFramePowerOf2), in, out, FFTW_FORWARD, FFTW_ESTIMATE);
+        fftw_plan_s* p = fftw_plan_dft_1d(static_cast<int>(dataBlockSize), in, out, FFTW_FORWARD, FFTW_ESTIMATE);
         fftw_execute(p);
 
         const size_t numSamplesShown = 100;
