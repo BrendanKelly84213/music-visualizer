@@ -33,6 +33,8 @@ add_executable(music-visualizer main.cpp
         SoundData.h
         Error.cpp
         Error.h
+        FloatDataView.cpp
+        FloatDataView.h
 )
 
 target_link_libraries(music-visualizer ${OpenGlLinkers} ${SDL_Linkers} ${LibSndFileLinkers} ${fftwLinkers})
