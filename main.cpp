@@ -12,6 +12,7 @@
 #include "Renderer.h"
 #include "Shader.h"
 #include "SoundData.h"
+#include "RenderCommand.h"
 
 const unsigned int dataBlockSize = 512;
 
@@ -101,12 +102,13 @@ int main()
         int height;
         glfwGetWindowSize(windowPtr, &width, &height);
         auto resolution = glm::vec2(width, height);
-        Renderer::clear();
+        RenderCommand::setClearColor({0.2f, 0.1f, 0.4f, 1.0f});
+        RenderCommand::clear();
         auto rectangleWidth = 1 / static_cast<double>(numSamplesShown);
         for (size_t i = 0; i < numSamplesShown; ++i) {
             auto rectangleHeight = magnitudes[i] * 0.01;
             auto bottomLeftPosition = glm::vec2((static_cast<double>(i) * rectangleWidth - 0.5) * 2.0f, -1);
-            renderer.drawRectangle(rectangleWidth, rectangleHeight, bottomLeftPosition, glm::vec4(1.0, 0.0, 0.0, 1.0));
+            renderer.drawRectangle(rectangleWidth, rectangleHeight, bottomLeftPosition, glm::vec4(0.1, 0.3, 0.2, 1.0));
         }
 
         glfwPollEvents();

@@ -35,6 +35,12 @@ add_executable(music-visualizer main.cpp
         Error.h
         FloatDataView.cpp
         FloatDataView.h
+        RenderCommand.cpp
+        RenderCommand.h
+        RendererAPI.cpp
+        RendererAPI.h
+        OpenGLRendererAPI.cpp
+        OpenGLRendererAPI.h
 )
 
 target_link_libraries(music-visualizer ${OpenGlLinkers} ${SDL_Linkers} ${LibSndFileLinkers} ${fftwLinkers})

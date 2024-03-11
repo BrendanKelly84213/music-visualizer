@@ -7,22 +7,7 @@
 #include "VertexAttributes.h"
 #include "IndexBuffer.h"
 #include "Shader.h"
-
-void Renderer::clear(GLbitfield mask)
-{
-    glClear(mask);
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-}
-
-void Renderer::drawElements(int count, const void* indices)
-{
-    glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, indices);
-}
-
-void Renderer::drawArrays(int first, int count, unsigned int mode)
-{
-    glDrawArrays(mode, first, count);
-}
+#include "RenderCommand.h"
 
 void Renderer::drawRectangle(float rectangleWidth, float rectangleHeight, const glm::vec2& bottomLeftPosition, const glm::vec4& color)
 {
@@ -80,6 +65,6 @@ void Renderer::drawRectangle(float rectangleWidth, float rectangleHeight, const 
     vertexAttributes.push<float>(3);
     vertexAttributes.enable(vertexBuffer, vertexArray);
 
-    drawElements(6);
+    RenderCommand::drawIndexed(6);
 }
 
