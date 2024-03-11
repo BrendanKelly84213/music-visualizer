@@ -6,7 +6,7 @@
 #define RENDERER_H
 
 #include <glad/glad.h>
-#include <glm/vec2.hpp>
+#include <glm/glm.hpp>
 
 class Renderer {
 public:
@@ -15,9 +15,8 @@ public:
     static void drawElements(int count, const void* indices = nullptr);
     static void drawArrays(int first, int count, unsigned int mode = GL_TRIANGLES);
     // Normalized values
-    void drawRectangle(float rectangleWidth, float rectangleHeight, glm::vec2 bottomLeftPosition);
+    void drawRectangle(float rectangleWidth, float rectangleHeight, const glm::vec2& bottomLeftPosition, const glm::vec4& color);
 private:
-
 };
 
 

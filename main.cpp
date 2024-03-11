@@ -106,7 +106,7 @@ int main()
         for (size_t i = 0; i < numSamplesShown; ++i) {
             auto rectangleHeight = magnitudes[i] * 0.01;
             auto bottomLeftPosition = glm::vec2((static_cast<double>(i) * rectangleWidth - 0.5) * 2.0f, -1);
-            renderer.drawRectangle(rectangleWidth, rectangleHeight, bottomLeftPosition);
+            renderer.drawRectangle(rectangleWidth, rectangleHeight, bottomLeftPosition, glm::vec4(1.0, 0.0, 0.0, 1.0));
         }
 
         glfwPollEvents();

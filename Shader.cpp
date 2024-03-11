@@ -6,7 +6,18 @@
 #include <fstream>
 #include <iostream>
 #include <glad/glad.h>
+#include <glm/gtc/type_ptr.hpp>
 #include "Shader.h"
+
+Shader::~Shader()
+{
+    glDeleteProgram(m_id);
+}
+
+void Shader::use() const
+{
+    glUseProgram(m_id);
+}
 
 // TODO: unsigned int -> enum
 int Shader::compileShader(const std::string& source, unsigned int typeFlag)
@@ -78,13 +89,15 @@ Result<unsigned int> Shader::loadFromRaw(const std::string& vertexShaderCode, co
     return m_id;
 }
 
-void Shader::use() const
+void Shader::setUniform4f(const std::string& name, float x, float y, float z, float w) const
 {
-    glUseProgram(m_id);
+    auto location = glGetUniformLocation(m_id, name.c_str());
+    glUniform4f(location, x, y, z, w);
 }
 
-Shader::~Shader()
+void Shader::setUniformMat4f(const std::string &name, const glm::mat4 &value) const
 {
-    glDeleteProgram(m_id);
+    auto location = glGetUniformLocation(m_id, name.c_str());
+    glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
 }
 

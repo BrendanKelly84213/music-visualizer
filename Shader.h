@@ -19,18 +19,14 @@ public:
     Result<unsigned int> load(const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
     Result<unsigned int> loadFromRaw(const std::string &vertexShaderCode, const std::string &fragmentShaderCode);
 
-    template<typename T>
-    void setUniform(const std::string& name, T value)
+    void setUniform4f(const std::string& name, float x, float y, float z, float w) const;
+    void setUniform4f(const std::string& name, const glm::vec4& value) const
     {
-        auto location = glGetUniformLocation(m_id, name.c_str());
-        if constexpr (std::is_same_v<float, T> || std::is_same_v<double, T>) {
-            glUniform1f(location, value);
-        } else if constexpr (std::is_same_v<glm::vec2, T>) {
-            glUniform2f(location, value.x, value.y);
-        } else if constexpr (std::is_same_v<glm::vec4, T>) {
-            glUniform4f(location, value.x, value.y, value.z, value.w);
-        }
+        setUniform4f(name, value.x, value.y, value.z, value.w);
     }
+    void setUniformMat4f(const std::string& name, const glm::mat4& value) const;
+
+    unsigned int id() const { return m_id; }
 
 private:
     unsigned int m_id {0};

@@ -24,28 +24,29 @@ void Renderer::drawArrays(int first, int count, unsigned int mode)
     glDrawArrays(mode, first, count);
 }
 
-void Renderer::drawRectangle(float rectangleWidth, float rectangleHeight, glm::vec2 bottomLeftPosition)
+void Renderer::drawRectangle(float rectangleWidth, float rectangleHeight, const glm::vec2& bottomLeftPosition, const glm::vec4& color)
 {
+
     std::string vertexShaderSrc = R"(
         #version 330 core
         layout (location = 0) in vec3 aPos;
 
-        out vec3 ourPosition;
+        out vec3 o_position;
 
         void main()
         {
             gl_Position = vec4(aPos, 1.0);
-            ourPosition = aPos;
+            o_position = aPos;
         }
     )";
 
     std::string fragmentShaderSrc = R"(
         #version 330 core
         out vec4 FragColor;
-        uniform vec4 ourColor;
+        uniform vec4 u_color;
         void main()
         {
-            FragColor = vec4(0.4, 0.0, 0.0, 1);
+            FragColor = u_color;
         }
     )";
 
@@ -55,6 +56,9 @@ void Renderer::drawRectangle(float rectangleWidth, float rectangleHeight, glm::v
         std::cout << result.error().message() << '\n';
         return;
     }
+
+    shaderProgram.use();
+    shaderProgram.setUniform4f("u_color", color);
 
     float vertices[] = {
         bottomLeftPosition.x + rectangleWidth, bottomLeftPosition.y + rectangleHeight, 0.0f, // Top right
@@ -76,7 +80,6 @@ void Renderer::drawRectangle(float rectangleWidth, float rectangleHeight, glm::v
     vertexAttributes.push<float>(3);
     vertexAttributes.enable(vertexBuffer, vertexArray);
 
-    shaderProgram.use();
     drawElements(6);
 }
 
