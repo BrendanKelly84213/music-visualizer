@@ -59,25 +59,29 @@ int main()
     auto data = TRY(SoundData::create("/home/brendan/dev/my-stuff/music-visualizer/test/hoty.wav"), 1);
     auto samplerate = data.info().samplerate;
 
-
-    auto windowPtr = window.ptr();
     auto* in = fftw_alloc_complex(dataBlockSize);
     auto* out = fftw_alloc_complex(dataBlockSize);
     double lastTime = 0.0f;
     size_t numFrames = 0;
     size_t dataIndex = 0;
-    Renderer renderer;
-    while (!glfwWindowShouldClose(windowPtr)) {
+    auto renderer = Renderer::create();
+    if (renderer == nullptr) {
+        return 1;
+    }
+    while (!glfwWindowShouldClose(window.ptr())) {
         auto currentTime = glfwGetTime();
         auto deltaTime = currentTime - lastTime;
         lastTime = currentTime;
-        if (glfwGetKey(windowPtr, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-            glfwSetWindowShouldClose(windowPtr, true);
+        if (glfwGetKey(window.ptr(), GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+            glfwSetWindowShouldClose(window.ptr(), true);
         }
 
         if (!Mix_PlayingMusic()) {
             Mix_PlayMusic(music.ptr(), -1);
         }
+
+
+        renderer->drawQuad({0.5, 0.5}, {0.1, 0.0}, {0.1, 0.2, 0.3, 1.0});
 
         auto samplesSinceLastFrame = static_cast<size_t>(samplerate * deltaTime);
         dataIndex += samplesSinceLastFrame;
@@ -100,20 +104,19 @@ int main()
 
         int width;
         int height;
-        glfwGetWindowSize(windowPtr, &width, &height);
+        glfwGetWindowSize(window.ptr(), &width, &height);
         auto resolution = glm::vec2(width, height);
-        RenderCommand::setClearColor({0.2f, 0.1f, 0.4f, 1.0f});
+        RenderCommand::setClearColor({0.0,0.0,0.1, 1.0});
         RenderCommand::clear();
-        auto rectangleWidth = 1 / static_cast<double>(numSamplesShown);
+        auto rectangleWidth = 2.0f / static_cast<double>(numSamplesShown);
         for (size_t i = 0; i < numSamplesShown; ++i) {
             auto rectangleHeight = magnitudes[i] * 0.01;
-            auto bottomLeftPosition = glm::vec2((static_cast<double>(i) * rectangleWidth - 0.5) * 2.0f, -1);
-            renderer.drawRectangle(rectangleWidth, rectangleHeight, bottomLeftPosition, glm::vec4(0.1, 0.3, 0.2, 1.0));
+            renderer->drawQuad({rectangleWidth, rectangleHeight}, {(static_cast<double>(i) * rectangleWidth - 1.0), 0.0}, {1.0, 0.2, 0.3, 1.0});
+            RenderCommand::drawIndexed(6);
         }
-
-        glfwPollEvents();
-        glfwSwapBuffers(windowPtr);
         numFrames++;
+        glfwSwapBuffers(window.ptr());
+        glfwPollEvents();
     }
     fftw_free(in);
     fftw_free(out);
