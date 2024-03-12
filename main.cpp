@@ -59,15 +59,17 @@ int main()
     auto data = TRY(SoundData::create("/home/brendan/dev/my-stuff/music-visualizer/test/hoty.wav"), 1);
     auto samplerate = data.info().samplerate;
 
-    auto* in = fftw_alloc_complex(dataBlockSize);
-    auto* out = fftw_alloc_complex(dataBlockSize);
+    auto in = fftw_alloc_complex(dataBlockSize);
+    auto out = fftw_alloc_complex(dataBlockSize);
     double lastTime = 0.0f;
     size_t numFrames = 0;
     size_t dataIndex = 0;
     auto renderer = Renderer::create();
     if (renderer == nullptr) {
+        std::cout << "Renderer is null\n";
         return 1;
     }
+    fftw_plan_s* p = fftw_plan_dft_1d(static_cast<int>(dataBlockSize), in, out, FFTW_FORWARD, FFTW_ESTIMATE);
     while (!glfwWindowShouldClose(window.ptr())) {
         auto currentTime = glfwGetTime();
         auto deltaTime = currentTime - lastTime;
@@ -80,9 +82,6 @@ int main()
             Mix_PlayMusic(music.ptr(), -1);
         }
 
-
-        renderer->drawQuad({0.5, 0.5}, {0.1, 0.0}, {0.1, 0.2, 0.3, 1.0});
-
         auto samplesSinceLastFrame = static_cast<size_t>(samplerate * deltaTime);
         dataIndex += samplesSinceLastFrame;
         for (size_t i = 0; i < dataBlockSize; ++i) {
@@ -91,7 +90,6 @@ int main()
             dataIndex++;
         }
 
-        fftw_plan_s* p = fftw_plan_dft_1d(static_cast<int>(dataBlockSize), in, out, FFTW_FORWARD, FFTW_ESTIMATE);
         fftw_execute(p);
 
         const size_t numSamplesShown = dataBlockSize / 4;
@@ -99,8 +97,6 @@ int main()
         for (size_t i = 0; i < numSamplesShown; ++i) {
             magnitudes[i] = std::sqrt(out[i][0] * out[i][0] + out[i][1] * out[i][1]);
         }
-
-        fftw_destroy_plan(p);
 
         int width;
         int height;
@@ -110,7 +106,7 @@ int main()
         RenderCommand::clear();
         auto rectangleWidth = 2.0f / static_cast<double>(numSamplesShown);
         for (size_t i = 0; i < numSamplesShown; ++i) {
-            auto rectangleHeight = magnitudes[i] * 0.01;
+            auto rectangleHeight = magnitudes[i] * 0.1;
             renderer->drawQuad({rectangleWidth, rectangleHeight}, {(static_cast<double>(i) * rectangleWidth - 1.0), 0.0}, {1.0, 0.2, 0.3, 1.0});
             RenderCommand::drawIndexed(6);
         }
@@ -118,6 +114,7 @@ int main()
         glfwSwapBuffers(window.ptr());
         glfwPollEvents();
     }
+    fftw_destroy_plan(p);
     fftw_free(in);
     fftw_free(out);
 
