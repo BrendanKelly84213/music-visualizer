@@ -14,7 +14,7 @@
 #include "SoundData.h"
 #include "RenderCommand.h"
 
-const unsigned int dataBlockSize = 1024;
+const unsigned int dataBlockSize = 4096;
 
 #define TRY(expression, returnValue)                                        \
     ({                                                                      \
@@ -101,7 +101,7 @@ int main()
         RenderCommand::clear();
         auto rectangleWidth = 2.0f / static_cast<double>(numSamplesShown);
         for (size_t i = 0; i < numSamplesShown; ++i) {
-            auto rectangleHeight = magnitudes[i] * 0.01;
+            auto rectangleHeight = magnitudes[i] * .1;
             renderer->drawQuad({rectangleWidth, rectangleHeight}, {(static_cast<double>(i) * rectangleWidth - 1.0), 0.0}, {1.0, 0.2, 0.3, 1.0});
             RenderCommand::drawIndexed(6);
         }
