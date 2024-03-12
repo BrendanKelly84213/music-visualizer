@@ -83,12 +83,6 @@ void Renderer::drawQuad(const glm::vec2& dimensions, const glm::vec2 &position, 
 
 void Renderer::drawQuad(const glm::vec4& color, const glm::mat4& transform)
 {
-    auto result = m_quadShader->loadFromRaw(s_quadVertexShaderSrc, s_quadFragmentShaderSrc);
-    if (result.isError()) {
-        std::cout << result.error().message() << '\n';
-        return;
-    }
-
     m_quadShader->use();
     m_quadShader->setUniform4f("u_color", color);
     m_quadShader->setUniformMat4f("u_transform", transform);
