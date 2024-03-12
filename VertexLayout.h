@@ -76,9 +76,9 @@ public:
         }
     }
 
-    int stride() const { return m_stride; }
-    size_t size() const { return m_attributes.size(); }
-    VertexAttribute const& at(size_t i) const { return m_attributes.at(i); }
+    [[nodiscard]] int stride() const { return m_stride; }
+    [[nodiscard]] size_t size() const { return m_attributes.size(); }
+    [[nodiscard]] VertexAttribute const& at(size_t i) const { return m_attributes.at(i); }
 private:
     std::vector<VertexAttribute> m_attributes {};
     int m_stride {0};

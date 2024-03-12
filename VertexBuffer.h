@@ -20,10 +20,10 @@ public:
     }
 
     void bind() const;
-    void unbind() const;
+    static void unbind() ;
 
     void setLayout(const VertexLayout& vertexLayout) { m_layout = vertexLayout; }
-    const VertexLayout& layout() const { return m_layout; }
+    [[nodiscard]] const VertexLayout& layout() const { return m_layout; }
 
 private:
     unsigned int m_id {0};

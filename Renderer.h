@@ -20,7 +20,7 @@ public:
     void drawQuad(const glm::vec2& dimensions, const glm::vec2& position, const glm::vec4& color);
     void drawQuad( const glm::vec4 &color, const glm::mat4 &transform = glm::mat4(1.0f));
 
-    std::shared_ptr<IndexBuffer> indexBuffer() const { return m_indexBuffer; }
+    [[nodiscard]] std::shared_ptr<IndexBuffer> indexBuffer() const { return m_indexBuffer; }
 private:
     std::shared_ptr<Shader> m_quadShader {};
     std::shared_ptr<VertexArray> m_vertexArray {};

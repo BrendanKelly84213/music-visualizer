@@ -32,7 +32,7 @@ public:
     }
     void setUniformMat4f(const std::string& name, const glm::mat4& value) const;
 
-    unsigned int id() const { return m_id; }
+    [[nodiscard]] unsigned int id() const { return m_id; }
 
 private:
     unsigned int m_id {0};

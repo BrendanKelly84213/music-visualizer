@@ -20,11 +20,11 @@ public:
     std::vector<float> fft(size_t start, size_t count);
     FloatDataView window(size_t start, size_t count);
 
-    float at(unsigned int i) const { return m_buffer[i]; }
-    float* ptr() const { return m_buffer.get(); }
-    int64_t frames() const { return m_frames; }
-    int64_t count() const { return m_count; }
-    SF_INFO const& info() const { return m_info; }
+    [[nodiscard]] float at(unsigned int i) const { return m_buffer[i]; }
+    [[nodiscard]] float* ptr() const { return m_buffer.get(); }
+    [[nodiscard]] int64_t frames() const { return m_frames; }
+    [[nodiscard]] int64_t count() const { return m_count; }
+    [[nodiscard]] SF_INFO const& info() const { return m_info; }
 
 private:
     SoundData(int64_t count, SNDFILE* sndfile, const SF_INFO& info);
