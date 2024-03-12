@@ -14,8 +14,6 @@ class VertexBuffer;
 class VertexArray {
 public:
     static std::shared_ptr<VertexArray> create();
-
-    VertexArray();
     ~VertexArray();
     void bind() const;
 

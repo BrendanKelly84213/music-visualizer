@@ -9,13 +9,10 @@
 
 std::shared_ptr<VertexArray> VertexArray::create()
 {
-    return std::make_shared<VertexArray>();
-}
-
-VertexArray::VertexArray()
-{
-    glGenVertexArrays(1, &m_id);
-    glBindVertexArray(m_id);
+    auto vertexArray = std::make_shared<VertexArray>();
+    glGenVertexArrays(1, &vertexArray->m_id);
+    glBindVertexArray(vertexArray->m_id);
+    return vertexArray;
 }
 
 VertexArray::~VertexArray()
