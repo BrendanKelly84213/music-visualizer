@@ -5,6 +5,7 @@
 #ifndef RENDERCOMMAND_H
 #define RENDERCOMMAND_H
 
+#include <memory>
 #include "RendererAPI.h"
 
 class RenderCommand {
@@ -25,7 +26,7 @@ public:
     }
 
 private:
-    static RendererAPI* s_renderAPI;
+    static std::unique_ptr<RendererAPI> s_renderAPI;
 };
 
 

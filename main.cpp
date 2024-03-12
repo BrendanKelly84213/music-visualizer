@@ -14,7 +14,7 @@
 #include "SoundData.h"
 #include "RenderCommand.h"
 
-const unsigned int dataBlockSize = 512;
+const unsigned int dataBlockSize = 1024;
 
 #define TRY(expression, returnValue)                                        \
     ({                                                                      \
@@ -62,7 +62,6 @@ int main()
     auto in = fftw_alloc_complex(dataBlockSize);
     auto out = fftw_alloc_complex(dataBlockSize);
     double lastTime = 0.0f;
-    size_t numFrames = 0;
     size_t dataIndex = 0;
     auto renderer = Renderer::create();
     if (renderer == nullptr) {
@@ -92,25 +91,20 @@ int main()
 
         fftw_execute(p);
 
-        const size_t numSamplesShown = dataBlockSize / 4;
+        const size_t numSamplesShown = dataBlockSize / 4.0;
         double magnitudes[numSamplesShown];
         for (size_t i = 0; i < numSamplesShown; ++i) {
             magnitudes[i] = std::sqrt(out[i][0] * out[i][0] + out[i][1] * out[i][1]);
         }
 
-        int width;
-        int height;
-        glfwGetWindowSize(window.ptr(), &width, &height);
-        auto resolution = glm::vec2(width, height);
         RenderCommand::setClearColor({0.0,0.0,0.1, 1.0});
         RenderCommand::clear();
         auto rectangleWidth = 2.0f / static_cast<double>(numSamplesShown);
         for (size_t i = 0; i < numSamplesShown; ++i) {
-            auto rectangleHeight = magnitudes[i] * 0.1;
+            auto rectangleHeight = magnitudes[i] * 0.01;
             renderer->drawQuad({rectangleWidth, rectangleHeight}, {(static_cast<double>(i) * rectangleWidth - 1.0), 0.0}, {1.0, 0.2, 0.3, 1.0});
             RenderCommand::drawIndexed(6);
         }
-        numFrames++;
         glfwSwapBuffers(window.ptr());
         glfwPollEvents();
     }

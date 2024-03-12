@@ -4,4 +4,4 @@
 
 #include "RenderCommand.h"
 
-RendererAPI* RenderCommand::s_renderAPI = RendererAPI::create();
+std::unique_ptr<RendererAPI> RenderCommand::s_renderAPI = RendererAPI::create();

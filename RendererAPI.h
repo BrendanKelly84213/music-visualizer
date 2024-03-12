@@ -7,6 +7,8 @@
 
 
 #include <glm/vec4.hpp>
+#include <memory>
+
 class RendererAPI {
 public:
     enum class API {
@@ -14,7 +16,7 @@ public:
         OpenGL
     };
 
-    static RendererAPI* create();
+    static std::unique_ptr<RendererAPI> create();
 
     virtual void setClearColor(const glm::vec4& color) = 0;
     virtual void clear() = 0;
