@@ -27,8 +27,8 @@ add_executable(music-visualizer main.cpp
         VertexArray.h
         VertexArray.cpp
         VertexBuffer.cpp
-        VertexAttributes.cpp
-        VertexAttributes.h
+        VertexLayout.cpp
+        VertexLayout.h
         SoundData.cpp
         SoundData.h
         Error.cpp

@@ -17,7 +17,7 @@ SoundData::SoundData(const int64_t count, SNDFILE* sndfile, const SF_INFO& info)
 
 std::variant<Error, SoundData> SoundData::create(const std::string& filepath)
 {
-    SF_INFO info;
+    SF_INFO info {};
     SNDFILE* sndfile = sf_open(filepath.c_str(), SFM_READ, &info);
     if (sndfile == nullptr) {
         return Error(sf_strerror(sndfile));

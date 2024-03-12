@@ -6,10 +6,11 @@
 #define INDEXBUFFER_H
 
 #include <glad/glad.h>
+#include <memory>
 
 class IndexBuffer {
 public:
-    IndexBuffer(const unsigned int* data, unsigned int count);
+    static std::shared_ptr<IndexBuffer> create(unsigned int* data, unsigned int count);
     ~IndexBuffer();
     void bind() const;
 private:

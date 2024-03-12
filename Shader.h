@@ -8,10 +8,16 @@
 #include <string>
 #include <glm/glm.hpp>
 #include <atomic>
+#include <memory>
 #include "Error.h"
 
 class Shader {
 public:
+    static std::shared_ptr<Shader> create()
+    {
+        return std::make_shared<Shader>();
+    }
+
     ~Shader();
     void use() const;
     int compileShader(const std::string& source, unsigned int typeFlag);
