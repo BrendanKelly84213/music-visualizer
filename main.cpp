@@ -50,13 +50,13 @@ int main()
     }
 
     Music music;
-    if (!music.load("/home/brendan/dev/my-stuff/music-visualizer/test/hoty.wav")) {
+    if (!music.load("/home/brendan/dev/my-stuff/music-visualizer/test/20Hz to 20kHz (Human Audio Spectrum).wav")) {
         std::cout << "Failed to load music file " << Mix_GetError() << '\n';
         return 1;
     }
 
     // NOTE: Experimental
-    auto data = TRY(SoundData::create("/home/brendan/dev/my-stuff/music-visualizer/test/hoty.wav"), 1);
+    auto data = TRY(SoundData::create("/home/brendan/dev/my-stuff/music-visualizer/test/20Hz to 20kHz (Human Audio Spectrum).wav"), 1);
     auto samplerate = data.info().samplerate;
 
     auto in = fftw_alloc_complex(dataBlockSize);
@@ -68,7 +68,7 @@ int main()
         std::cout << "Renderer is null\n";
         return 1;
     }
-    fftw_plan_s* p = fftw_plan_dft_1d(static_cast<int>(dataBlockSize), in, out, FFTW_FORWARD, FFTW_ESTIMATE);
+    auto p = fftw_plan_dft_1d(static_cast<int>(dataBlockSize), in, out, FFTW_FORWARD, FFTW_ESTIMATE);
     while (!glfwWindowShouldClose(window.ptr())) {
         auto currentTime = glfwGetTime();
         auto deltaTime = currentTime - lastTime;
@@ -91,7 +91,7 @@ int main()
 
         fftw_execute(p);
 
-        const size_t numSamplesShown = dataBlockSize / 4.0;
+        const size_t numSamplesShown = dataBlockSize;
         double magnitudes[numSamplesShown];
         for (size_t i = 0; i < numSamplesShown; ++i) {
             magnitudes[i] = std::sqrt(out[i][0] * out[i][0] + out[i][1] * out[i][1]);
@@ -108,6 +108,7 @@ int main()
         glfwSwapBuffers(window.ptr());
         glfwPollEvents();
     }
+    Mix_CloseAudio();
     fftw_destroy_plan(p);
     fftw_free(in);
     fftw_free(out);
