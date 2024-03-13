@@ -30,10 +30,7 @@ int main()
     }
 
     auto music = TRY(Music::create("/home/brendan/dev/my-stuff/music-visualizer/test/20Hz to 20kHz (Human Audio Spectrum).wav"), 1);
-
-    // NOTE: Experimental
-    auto data = TRY(SoundData::create("/home/brendan/dev/my-stuff/music-visualizer/test/20Hz to 20kHz (Human Audio Spectrum).wav"), 1);
-    auto samplerate = data.info().samplerate;
+    auto samplerate = music->data()->info().samplerate;
 
     auto in = fftw_alloc_complex(dataBlockSize);
     auto out = fftw_alloc_complex(dataBlockSize);
@@ -53,14 +50,14 @@ int main()
             glfwSetWindowShouldClose(window.ptr(), true);
         }
 
-        if (!Mix_PlayingMusic()) {
-            Mix_PlayMusic(music->ptr(), -1);
+        if (!Music::playing()) {
+            music->play();
         }
 
         auto samplesSinceLastFrame = static_cast<size_t>(samplerate * deltaTime);
         dataIndex += samplesSinceLastFrame;
-        for (size_t i = 0; i < dataBlockSize && dataIndex < data.count(); ++i) {
-            in[i][0] = data.at(dataIndex);
+        for (size_t i = 0; i < dataBlockSize && dataIndex < music->data()->count(); ++i) {
+            in[i][0] = music->data()->at(dataIndex);
             in[i][1] = 0;
             dataIndex++;
         }

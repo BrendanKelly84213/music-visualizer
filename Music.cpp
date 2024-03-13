@@ -22,7 +22,9 @@ Result<std::unique_ptr<Music>> Music::create(const std::string &filename)
         return Error("Failed to load music file " + std::string(Mix_GetError()) + '\n');
     }
 
-    return std::make_unique<Music>(ptr);
+    auto soundData = TRY(SoundData::create(filename), Error("Failed to load sound data"));
+
+    return std::make_unique<Music>(ptr, std::make_shared<SoundData>(std::move(soundData)));
 }
 
 

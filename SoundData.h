@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 #include <vector>
+#include <sndfile.h>
 #include "Error.h"
 #include "FloatDataView.h"
 

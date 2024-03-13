@@ -2,9 +2,6 @@
 // Created by brendan on 3/2/24.
 //
 
-#include <sndfile.h>
-#include <variant>
-#include <cstring>
 #include "SoundData.h"
 
 SoundData::SoundData(const int64_t count, SNDFILE* sndfile, const SF_INFO& info)
