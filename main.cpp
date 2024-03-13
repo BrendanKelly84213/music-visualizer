@@ -83,7 +83,7 @@ int main()
 
         auto samplesSinceLastFrame = static_cast<size_t>(samplerate * deltaTime);
         dataIndex += samplesSinceLastFrame;
-        for (size_t i = 0; i < dataBlockSize; ++i) {
+        for (size_t i = 0; i < dataBlockSize && dataIndex < data.count(); ++i) {
             in[i][0] = data.at(dataIndex);
             in[i][1] = 0;
             dataIndex++;
