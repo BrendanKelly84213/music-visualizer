@@ -15,7 +15,7 @@
 class SoundData {
 public:
     // NOTE: Experimental
-    static std::variant<Error, SoundData> create(const std::string& filepath);
+    static Result<SoundData> create(const std::string& filepath);
 
     std::vector<float> fft(size_t start, size_t count);
     FloatDataView window(size_t start, size_t count);

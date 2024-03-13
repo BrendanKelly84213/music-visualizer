@@ -8,6 +8,18 @@
 #include <string>
 #include <variant>
 
+#define TRY(expression, returnValue)                                        \
+    ({                                                                      \
+        auto&& temporary = expression;                                      \
+        if (std::move(temporary).isError()) {                               \
+          std::cout << "Error: " << std::move(temporary).error().message(); \
+          return returnValue;                                               \
+        }                                                                   \
+        std::move(temporary).value();                                       \
+    })                                                                      \
+
+
+
 class Error {
 public:
     Error(std::string message) : m_message(std::move(message))
@@ -30,7 +42,7 @@ public:
     {}
 
     [[nodiscard]] bool isError() const { return std::holds_alternative<Error>(m_error_or_value); }
-    T value() const { return std::get<T>(m_error_or_value); }
+    T&& value() { return std::move(std::get<T>(m_error_or_value)); }
     [[nodiscard]] Error error() const { return std::get<Error>(m_error_or_value); }
 private:
     std::variant<Error, T> m_error_or_value {};

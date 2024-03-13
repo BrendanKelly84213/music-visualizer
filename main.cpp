@@ -16,16 +16,6 @@
 
 const unsigned int dataBlockSize = 4096;
 
-#define TRY(expression, returnValue)                                        \
-    ({                                                                      \
-        auto&& temporary = expression;                                      \
-        if (std::holds_alternative<Error>(std::move(temporary))) {          \
-          std::cout << "Error: " << std::get<Error>(temporary).message();   \
-          return returnValue;                                               \
-        }                                                                   \
-        std::get<SoundData>(std::move(temporary));                          \
-    })                                                                      \
-
 int main()
 {
     Window window(800, 600, "Hello Window");
