@@ -29,21 +29,7 @@ int main()
         return 1;
     }
 
-    if (SDL_Init(SDL_INIT_AUDIO) < 0) {
-        std::cout << "Failed to initialize SDL " << SDL_GetError() << '\n';
-        return 1;
-    }
-
-    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
-        std::cout << "Failed to initialize SDL_mixer " << Mix_GetError() << '\n';
-        return 1;
-    }
-
-    Music music;
-    if (!music.load("/home/brendan/dev/my-stuff/music-visualizer/test/20Hz to 20kHz (Human Audio Spectrum).wav")) {
-        std::cout << "Failed to load music file " << Mix_GetError() << '\n';
-        return 1;
-    }
+    auto music = TRY(Music::create("/home/brendan/dev/my-stuff/music-visualizer/test/20Hz to 20kHz (Human Audio Spectrum).wav"), 1);
 
     // NOTE: Experimental
     auto data = TRY(SoundData::create("/home/brendan/dev/my-stuff/music-visualizer/test/20Hz to 20kHz (Human Audio Spectrum).wav"), 1);
@@ -68,7 +54,7 @@ int main()
         }
 
         if (!Mix_PlayingMusic()) {
-            Mix_PlayMusic(music.ptr(), -1);
+            Mix_PlayMusic(music->ptr(), -1);
         }
 
         auto samplesSinceLastFrame = static_cast<size_t>(samplerate * deltaTime);
