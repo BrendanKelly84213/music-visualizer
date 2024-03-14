@@ -7,9 +7,10 @@
 SoundData::SoundData(const int64_t count, SNDFILE* sndfile, const SF_INFO& info)
 : m_count(count), m_info(info)
 {
-    m_buffer = std::make_unique<float[]>(m_count);
-    m_frames = sf_read_float(sndfile, m_buffer.get(), m_count);
+    m_buffer = std::make_unique<double[]>(m_count);
+    m_frames = sf_read_double(sndfile, m_buffer.get(), m_count);
     sf_close(sndfile);
+    
 }
 
 Result<SoundData> SoundData::create(const std::string& filepath)
@@ -21,19 +22,4 @@ Result<SoundData> SoundData::create(const std::string& filepath)
     }
     auto const count = info.frames * info.channels;
     return SoundData(count, sndfile, info);
-}
-
-FloatDataView SoundData::window(size_t start, size_t count)
-{
-    return {m_buffer.get() + start, count};
-}
-
-std::vector<float> SoundData::fft(size_t start, size_t count)
-{
-    auto dataView = window(start, count);
-    std::vector<float> returnVector;
-    for (auto const& value : dataView) {
-        returnVector.push_back(value);
-    }
-    return returnVector;
 }

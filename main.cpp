@@ -51,7 +51,7 @@ int main()
             music->play();
         }
 
-        // Collect sound data for 
+        // Collect sound data for fft
         auto samplesSinceLastFrame = static_cast<size_t>(samplerate * deltaTime);
         dataIndex += samplesSinceLastFrame;
         for (size_t i = 0; i < dataBlockSize && dataIndex < music->data()->count(); ++i) {
@@ -62,18 +62,14 @@ int main()
 
         fftw_execute(p);
 
-        const size_t numSamplesShown = dataBlockSize;
-        double magnitudes[numSamplesShown];
-        for (size_t i = 0; i < numSamplesShown; ++i) {
-            magnitudes[i] = std::sqrt(out[i][0] * out[i][0] + out[i][1] * out[i][1]);
-        }
-
         // Render
         RenderCommand::setClearColor({0.0,0.0,0.1, 1.0});
         RenderCommand::clear();
+        const size_t numSamplesShown = dataBlockSize;
         auto rectangleWidth = 2.0f / static_cast<double>(numSamplesShown);
+        auto magnitude = [&](size_t i) { return std::sqrt(out[i][0] * out[i][0] + out[i][1] * out[i][1]); };
         for (size_t i = 0; i < numSamplesShown; ++i) {
-            auto rectangleHeight = magnitudes[i] * .1;
+            auto rectangleHeight = magnitude(i) * .1;
             renderer->drawQuad({rectangleWidth, rectangleHeight}, {(static_cast<double>(i) * rectangleWidth - 1.0), 0.0}, {1.0, 0.2, 0.3, 1.0});
             RenderCommand::drawIndexed(6);
         }

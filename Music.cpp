@@ -28,7 +28,6 @@ Result<std::unique_ptr<Music>> Music::create(const std::string &filename)
     return std::make_unique<Music>(std::move(ptr), std::make_shared<SoundData>(std::move(soundData)));
 }
 
-
 bool Music::load(const std::string& filename)
 {
     auto raw_ptr = Mix_LoadMUS(filename.c_str());
