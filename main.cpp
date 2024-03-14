@@ -1,16 +1,13 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
-#include <sndfile.h>
 #include <array>
 #include <fftw3.h>
 
 #include "Window.h"
 #include "Music.h"
 #include "Renderer.h"
-#include "Shader.h"
 #include "SoundData.h"
 #include "RenderCommand.h"
 
@@ -54,6 +51,7 @@ int main()
             music->play();
         }
 
+        // Collect sound data for 
         auto samplesSinceLastFrame = static_cast<size_t>(samplerate * deltaTime);
         dataIndex += samplesSinceLastFrame;
         for (size_t i = 0; i < dataBlockSize && dataIndex < music->data()->count(); ++i) {
@@ -70,6 +68,7 @@ int main()
             magnitudes[i] = std::sqrt(out[i][0] * out[i][0] + out[i][1] * out[i][1]);
         }
 
+        // Render
         RenderCommand::setClearColor({0.0,0.0,0.1, 1.0});
         RenderCommand::clear();
         auto rectangleWidth = 2.0f / static_cast<double>(numSamplesShown);
@@ -78,6 +77,7 @@ int main()
             renderer->drawQuad({rectangleWidth, rectangleHeight}, {(static_cast<double>(i) * rectangleWidth - 1.0), 0.0}, {1.0, 0.2, 0.3, 1.0});
             RenderCommand::drawIndexed(6);
         }
+
         glfwSwapBuffers(window.ptr());
         glfwPollEvents();
     }

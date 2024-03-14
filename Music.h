@@ -14,21 +14,17 @@
 class Music {
 public:
     static Result<std::unique_ptr<Music>> create(const std::string& filename);
-    Music() : m_ptr(nullptr)
-    {}
-    Music(_Mix_Music* ptr, std::shared_ptr<SoundData> soundData)
-        : m_ptr(ptr), m_soundData(std::move(soundData))
+    Music(std::unique_ptr<Mix_Music, decltype(&Mix_FreeMusic)>&& ptr, std::shared_ptr<SoundData> soundData)
+        : m_ptr(std::move(ptr)), m_soundData(std::move(soundData))
     {}
 
-    ~Music();
-    bool load(const std::string& path);
+    bool load(const std::string& filename);
     static bool playing() { return Mix_PlayingMusic(); }
-    void play(int loops = -1) { Mix_PlayMusic(m_ptr, loops); }
-    Mix_Music* ptr() { return m_ptr; }
+    void play(int loops = -1) { Mix_PlayMusic(m_ptr.get(), loops); }
     [[nodiscard]] std::shared_ptr<SoundData> data() const { return m_soundData; }
 private:
     std::shared_ptr<SoundData> m_soundData {};
-    Mix_Music* m_ptr {nullptr};
+    std::unique_ptr<Mix_Music, decltype(&Mix_FreeMusic)> m_ptr;
 };
 
 #endif //MUSIC_H
