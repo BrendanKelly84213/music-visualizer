@@ -18,6 +18,8 @@ public:
         : m_ptr(std::move(ptr)), m_soundData(std::move(soundData))
     {}
 
+    ~Music() { Mix_CloseAudio(); }
+
     bool load(const std::string& filename);
     static bool playing() { return Mix_PlayingMusic(); }
     void play(int loops = -1) { Mix_PlayMusic(m_ptr.get(), loops); }
