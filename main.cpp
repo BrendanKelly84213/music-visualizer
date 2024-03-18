@@ -1,9 +1,7 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <SDL2/SDL_mixer.h>
 #include <array>
-#include <fftw3.h>
 
 #include "Window.h"
 #include "Music.h"
@@ -29,7 +27,7 @@ int main()
 
     auto music = TRY(Music::create("/home/brendan/dev/my-stuff/music-visualizer/test/hoty.wav"), 1);
     auto samplerate = music->data()->info().samplerate;
-    auto fft = FFT::create(dataBlockSize, music->data());
+    auto fft = TRY(FFT::create(dataBlockSize, music->data()), 1);
 
     auto renderer = Renderer::create();
     if (renderer == nullptr) {
@@ -51,7 +49,7 @@ int main()
         }
 
         auto samplesSinceLastFrame = static_cast<size_t>(samplerate * deltaTime);
-        fft.execute(samplesSinceLastFrame);
+        fft->execute(samplesSinceLastFrame);
 
         // Render
         RenderCommand::setClearColor({0.0,0.0,0.1, 1.0});
@@ -59,7 +57,7 @@ int main()
         const size_t numSamplesShown = samplesSinceLastFrame / 2.0;
         auto rectangleWidth = 2.0 / static_cast<double>(numSamplesShown);
         for (size_t i = 0; i < numSamplesShown; i++) {
-            auto rectangleHeight = fft.magnitudeAt(i) * .01;
+            auto rectangleHeight = fft->magnitudeAt(i) * .01;
             renderer->drawQuad({rectangleWidth, rectangleHeight}, {(static_cast<double>(i) * rectangleWidth - 1.0), 0.0}, {1.0, 0.2, 0.3, 1.0});
             RenderCommand::drawIndexed(6);
         }

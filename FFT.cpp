@@ -3,12 +3,21 @@
 //
 
 #include "FFT.h"
-FFT FFT::create(size_t dataBlockSize, const std::shared_ptr<SoundData> &soundData)
+Result<std::shared_ptr<FFT>> FFT::create(size_t dataBlockSize, const std::shared_ptr<SoundData> &soundData)
 {
     auto in = fftw_alloc_complex(dataBlockSize);
+    if (in == nullptr) {
+        return Error("Failed to allocate memory for fftw in pointer");
+    }
     auto out = fftw_alloc_complex(dataBlockSize);
+    if (out == nullptr) {
+        return Error("Failed to allocate memory for fftw out pointer");
+    }
     auto plan = fftw_plan_dft_1d(static_cast<int>(dataBlockSize), in, out, FFTW_FORWARD, FFTW_ESTIMATE);
-    return {dataBlockSize, soundData, in, out, plan};
+    if (plan == nullptr) {
+        return Error("Failed to allocate memory for fftw plan pointer");
+    }
+    return std::make_shared<FFT>(dataBlockSize, soundData, in, out, plan);
 }
 
 FFT::~FFT()
