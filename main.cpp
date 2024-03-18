@@ -2,8 +2,9 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <array>
-#include "imgui.h"
+#include <filesystem>
 
+#include "imgui.h"
 #include "Window.h"
 #include "Music.h"
 #include "Renderer.h"
@@ -12,6 +13,8 @@
 #include "FFT.h"
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
+
+namespace fs = std::filesystem;
 
 const unsigned int dataBlockSize = 1024;
 
@@ -42,6 +45,8 @@ int main()
     ImGui_ImplGlfw_InitForOpenGL(window.ptr(), true);
     ImGui_ImplOpenGL3_Init();
 
+    // TODO: We need to be able to load music on the fly. Therefore initializing the music class with music in its data doesn't really make sense
+    // With GUI, we should start with no music playing (or potentially get it from command line arguments in the future), then be able to select music from the filesystem
     auto music = TRY(Music::create("/home/brendan/dev/my-stuff/music-visualizer/test/hoty.wav"), 1);
     auto samplerate = music->data()->info().samplerate;
     auto fft = TRY(FFT::create(dataBlockSize, music->data()), 1);
@@ -64,7 +69,7 @@ int main()
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-        ImGui::ShowDemoWindow(); // Show demo window! :)
+        ImGui::ShowDemoWindow();
 
         if (glfwGetKey(window.ptr(), GLFW_KEY_ESCAPE) == GLFW_PRESS) {
             glfwSetWindowShouldClose(window.ptr(), true);
