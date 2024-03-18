@@ -11,6 +11,7 @@ link_directories("/usr/local/src/glfw-3.3.9/build/src")
 include_directories("/usr/local/src/glfw-3.3.9/include")
 link_directories("/usr/local/src/glad/src")
 include_directories( "/usr/local/src/glad/include")
+include_directories("/home/brendan/dev/my-stuff/music-visualizer/imgui")
 
 add_executable(music-visualizer main.cpp
         /usr/local/src/glad/src/glad.c
@@ -43,6 +44,15 @@ add_executable(music-visualizer main.cpp
         OpenGLRendererAPI.h
         FFT.cpp
         FFT.h
+        /home/brendan/dev/my-stuff/music-visualizer/imgui/imgui.cpp
+        /home/brendan/dev/my-stuff/music-visualizer/imgui/imgui.h
+        /home/brendan/dev/my-stuff/music-visualizer/imgui/imgui_demo.cpp
+        /home/brendan/dev/my-stuff/music-visualizer/imgui/imgui_draw.cpp
+        /home/brendan/dev/my-stuff/music-visualizer/imgui/imgui_internal.h
+        /home/brendan/dev/my-stuff/music-visualizer/imgui/imgui_tables.cpp
+        /home/brendan/dev/my-stuff/music-visualizer/imgui/imgui_widgets.cpp
+        /home/brendan/dev/my-stuff/music-visualizer/imgui/backends/imgui_impl_glfw.cpp
+        /home/brendan/dev/my-stuff/music-visualizer/imgui/backends/imgui_impl_opengl3.cpp
 )
 
 target_link_libraries(music-visualizer ${OpenGlLinkers} ${SDL_Linkers} ${LibSndFileLinkers} ${fftwLinkers})

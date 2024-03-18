@@ -2,6 +2,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <array>
+#include "imgui.h"
 
 #include "Window.h"
 #include "Music.h"
@@ -9,6 +10,8 @@
 #include "SoundData.h"
 #include "RenderCommand.h"
 #include "FFT.h"
+#include "backends/imgui_impl_glfw.h"
+#include "backends/imgui_impl_opengl3.h"
 
 const unsigned int dataBlockSize = 1024;
 
@@ -25,6 +28,20 @@ int main()
         return 1;
     }
 
+    // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+    //ImGui::StyleColorsLight();
+
+    // Setup Platform/Renderer backends
+    ImGui_ImplGlfw_InitForOpenGL(window.ptr(), true);
+    ImGui_ImplOpenGL3_Init();
+
     auto music = TRY(Music::create("/home/brendan/dev/my-stuff/music-visualizer/test/hoty.wav"), 1);
     auto samplerate = music->data()->info().samplerate;
     auto fft = TRY(FFT::create(dataBlockSize, music->data()), 1);
@@ -40,6 +57,15 @@ int main()
         auto currentTime = glfwGetTime();
         auto deltaTime = currentTime - lastTime;
         lastTime = currentTime;
+        glfwPollEvents();
+        // (Your code calls glfwPollEvents())
+        // ...
+        // Start the Dear ImGui frame
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+        ImGui::ShowDemoWindow(); // Show demo window! :)
+
         if (glfwGetKey(window.ptr(), GLFW_KEY_ESCAPE) == GLFW_PRESS) {
             glfwSetWindowShouldClose(window.ptr(), true);
         }
@@ -62,9 +88,14 @@ int main()
             RenderCommand::drawIndexed(6);
         }
 
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window.ptr());
-        glfwPollEvents();
     }
+
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
 
     return 0;
 }
