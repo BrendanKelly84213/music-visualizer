@@ -17,6 +17,7 @@ class SoundData {
 public:
     // NOTE: Experimental
     static Result<SoundData> create(const std::string& filepath);
+    SoundData() = default;
 
     [[nodiscard]] double at(unsigned int i) const { return m_buffer[i]; }
     [[nodiscard]] double* ptr() const { return m_buffer.get(); }

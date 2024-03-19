@@ -10,7 +10,6 @@
 #include "Renderer.h"
 #include "SoundData.h"
 #include "RenderCommand.h"
-#include "FFT.h"
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 
@@ -47,9 +46,7 @@ int main()
 
     // TODO: We need to be able to load music on the fly. Therefore initializing the music class with music in its data doesn't really make sense
     // With GUI, we should start with no music playing (or potentially get it from command line arguments in the future), then be able to select music from the filesystem
-    auto music = TRY(Music::create("/home/brendan/dev/my-stuff/music-visualizer/test/hoty.wav"), 1);
-    auto samplerate = music->data()->info().samplerate;
-    auto fft = TRY(FFT::create(dataBlockSize, music->data()), 1);
+    auto music = TRY(Music::create(dataBlockSize), 1);
 
     auto renderer = Renderer::create();
     if (renderer == nullptr) {
@@ -57,6 +54,11 @@ int main()
         return 1;
     }
 
+    // FIXME: Temporary
+    int samplerate = 0;
+    fs::current_path("../");
+    const std::string projectRoot = fs::current_path();
+    std::string songPath = projectRoot + "/test/hoty.wav";
     double lastTime = 0.0f;
     while (!glfwWindowShouldClose(window.ptr())) {
         auto currentTime = glfwGetTime();
@@ -75,12 +77,20 @@ int main()
             glfwSetWindowShouldClose(window.ptr(), true);
         }
 
+        if (!music->loaded()) {
+            if (music->load(songPath)) {
+                samplerate = music->info().samplerate;
+            } else {
+                std::cout << "Failed to load music at: " << songPath << '\n';
+            }
+        }
+
         if (!Music::playing()) {
             music->play(0);
         }
 
         auto samplesSinceLastFrame = static_cast<size_t>(samplerate * deltaTime);
-        fft->execute(samplesSinceLastFrame);
+        music->executeFFT(samplesSinceLastFrame);
 
         // Render
         RenderCommand::setClearColor({0.0,0.0,0.1, 1.0});
@@ -88,7 +98,7 @@ int main()
         const size_t numSamplesShown = samplesSinceLastFrame / 2.0;
         auto rectangleWidth = 2.0 / static_cast<double>(numSamplesShown);
         for (size_t i = 0; i < numSamplesShown; i++) {
-            auto rectangleHeight = fft->magnitudeAt(i) * .01;
+            auto rectangleHeight = music->fftMagnitudeAt(i) * .01;
             renderer->drawQuad({rectangleWidth, rectangleHeight}, {(static_cast<double>(i) * rectangleWidth - 1.0), 0.0}, {1.0, 0.2, 0.3, 1.0});
             RenderCommand::drawIndexed(6);
         }

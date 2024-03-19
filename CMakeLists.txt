@@ -42,8 +42,6 @@ add_executable(music-visualizer main.cpp
         RendererAPI.h
         OpenGLRendererAPI.cpp
         OpenGLRendererAPI.h
-        FFT.cpp
-        FFT.h
         /home/brendan/dev/my-stuff/music-visualizer/imgui/imgui.cpp
         /home/brendan/dev/my-stuff/music-visualizer/imgui/imgui.h
         /home/brendan/dev/my-stuff/music-visualizer/imgui/imgui_demo.cpp
