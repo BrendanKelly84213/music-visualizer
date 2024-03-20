@@ -19,6 +19,7 @@ namespace fs = std::filesystem;
 
 unsigned int dataBlockSize = 1024;
 std::string songPath;
+float frameRate = 0;
 
 static void mainMenu(const std::shared_ptr<Music>& music)
 {
@@ -43,6 +44,7 @@ static void mainMenu(const std::shared_ptr<Music>& music)
             }
             ImGui::EndMenu();
         }
+        ImGui::Text("Immediate Frame Rate: %.1f", frameRate);
         ImGui::EndMainMenuBar();
     }
 }
@@ -85,6 +87,7 @@ int main()
     while (!glfwWindowShouldClose(window.ptr())) {
         auto currentTime = glfwGetTime();
         auto deltaTime = currentTime - lastTime;
+        frameRate = 1.0f / deltaTime;
         lastTime = currentTime;
         glfwPollEvents();
         ImGui_ImplOpenGL3_NewFrame();
@@ -112,14 +115,14 @@ int main()
         // Render
         RenderCommand::setClearColor({0.0,0.0,0.1, 1.0});
         RenderCommand::clear();
-        const size_t numSamplesShown = samplesSinceLastFrame / 2.0;
+
+        auto numSamplesShown = samplesSinceLastFrame / 2;
         auto rectangleWidth = 2.0 / static_cast<double>(numSamplesShown);
         for (size_t i = 0; i < numSamplesShown; i++) {
             auto rectangleHeight = music->fftMagnitudeAt(i) * .01;
             renderer->drawQuad({rectangleWidth, rectangleHeight}, {(static_cast<double>(i) * rectangleWidth - 1.0), 0.0}, {1.0, 0.2, 0.3, 1.0});
             RenderCommand::drawIndexed(6);
         }
-
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window.ptr());
