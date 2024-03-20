@@ -3,6 +3,8 @@
 #include <GLFW/glfw3.h>
 #include <array>
 #include <filesystem>
+#include <algorithm>
+#include <thread>
 
 #include "imgui.h"
 #include "Window.h"
@@ -15,7 +17,35 @@
 
 namespace fs = std::filesystem;
 
-const unsigned int dataBlockSize = 1024;
+unsigned int dataBlockSize = 1024;
+std::string songPath;
+
+static void mainMenu(const std::shared_ptr<Music>& music)
+{
+    auto openFile = [&]() {
+        char filename[1024];
+        FILE *f = popen(R"(zenity --file-selection  --file-filter=*.wav)", "r");
+        fgets(filename, 1024, f);
+        std::string filenameString = filename;
+        filenameString.erase(std::remove(filenameString.begin(), filenameString.end(), '\n'), filenameString.cend());
+        if (!songPath.empty() && songPath == filenameString) {
+            return;
+        }
+        songPath = filenameString;
+        music->setLoaded(false);
+    };
+
+    if (ImGui::BeginMainMenuBar()) {
+        if (ImGui::BeginMenu("File")) {
+            if (ImGui::MenuItem("Open")) {
+                std::thread t(openFile);
+                t.detach();
+            }
+            ImGui::EndMenu();
+        }
+        ImGui::EndMainMenuBar();
+    }
+}
 
 int main()
 {
@@ -34,18 +64,13 @@ int main()
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-    // Setup Dear ImGui style
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     ImGui::StyleColorsDark();
-    //ImGui::StyleColorsLight();
 
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window.ptr(), true);
     ImGui_ImplOpenGL3_Init();
 
-    // TODO: We need to be able to load music on the fly. Therefore initializing the music class with music in its data doesn't really make sense
-    // With GUI, we should start with no music playing (or potentially get it from command line arguments in the future), then be able to select music from the filesystem
     auto music = TRY(Music::create(dataBlockSize), 1);
 
     auto renderer = Renderer::create();
@@ -54,38 +79,30 @@ int main()
         return 1;
     }
 
-    // FIXME: Temporary
     int samplerate = 0;
-    fs::current_path("../");
-    const std::string projectRoot = fs::current_path();
-    std::string songPath = projectRoot + "/test/hoty.wav";
     double lastTime = 0.0f;
+
     while (!glfwWindowShouldClose(window.ptr())) {
         auto currentTime = glfwGetTime();
         auto deltaTime = currentTime - lastTime;
         lastTime = currentTime;
         glfwPollEvents();
-        // (Your code calls glfwPollEvents())
-        // ...
-        // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-        ImGui::ShowDemoWindow();
+        mainMenu(music);
 
         if (glfwGetKey(window.ptr(), GLFW_KEY_ESCAPE) == GLFW_PRESS) {
             glfwSetWindowShouldClose(window.ptr(), true);
         }
 
-        if (!music->loaded()) {
+        if (!music->loaded() && !songPath.empty()) {
             if (music->load(songPath)) {
                 samplerate = music->info().samplerate;
-            } else {
-                std::cout << "Failed to load music at: " << songPath << '\n';
             }
         }
 
-        if (!Music::playing()) {
+        if (!Music::playing() && music->loaded()) {
             music->play(0);
         }
 

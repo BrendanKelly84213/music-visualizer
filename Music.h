@@ -23,6 +23,7 @@ public:
 
     ~FFT();
     void execute(size_t numSamples, const SoundData& soundData);
+    void resetDataIndex() { m_dataIndex = 0; }
     [[nodiscard]] double magnitudeAt(size_t i) const { return std::sqrt(m_out[i][0] * m_out[i][0] + m_out[i][1] * m_out[i][1]); }
 private:
 
@@ -47,6 +48,7 @@ public:
 
     static bool playing() { return Mix_PlayingMusic(); }
     void play(int loops = -1) { Mix_PlayMusic(m_ptr.get(), loops); }
+    void setLoaded(bool loaded) { m_loaded = loaded; }
     [[nodiscard]] double fftMagnitudeAt(size_t i) const { return m_fft->magnitudeAt(i); }
     [[nodiscard]] bool loaded() const { return m_loaded; }
     [[nodiscard]] SF_INFO const& info() const { return m_soundData.info(); }

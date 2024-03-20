@@ -72,6 +72,7 @@ bool Music::load(const std::string& filename)
     if (raw_ptr == nullptr) {
         return false;
     }
+    m_fft->resetDataIndex();
     m_ptr = std::shared_ptr<Mix_Music>(raw_ptr, Mix_FreeMusic);
     m_soundData = TRY(SoundData::create(filename), false);
     m_loaded = true;
