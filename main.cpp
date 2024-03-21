@@ -13,6 +13,7 @@
 #include "RenderCommand.h"
 #include "GUI.h"
 #include "Spectrum.h"
+#include "imgui.h"
 
 namespace fs = std::filesystem;
 
@@ -52,7 +53,7 @@ int main()
         lastTime = currentTime;
         glfwPollEvents();
         GUI::newFrame();
-        GUI::mainMenu(music, frameRate);
+        gui.mainMenu(music, frameRate);
 
         if (glfwGetKey(window.ptr(), GLFW_KEY_ESCAPE) == GLFW_PRESS) {
             glfwSetWindowShouldClose(window.ptr(), true);
@@ -74,7 +75,9 @@ int main()
         // Render
         RenderCommand::setClearColor({0.0,0.0,0.1, 1.0});
         RenderCommand::clear();
-        Spectrum::render(samplesSinceLastFrame, music, renderer);
+        if (gui.renderSpectrum()) {
+            Spectrum::render(samplesSinceLastFrame, music, renderer);
+        }
         GUI::render();
         glfwSwapBuffers(window.ptr());
     }

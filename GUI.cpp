@@ -12,6 +12,7 @@
 
 
 GUI::GUI(const Window& window)
+: m_renderSpectrum(false)
 {
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -54,6 +55,12 @@ void GUI::mainMenu(const std::shared_ptr<Music>& music, float frameRate)
             if (ImGui::MenuItem("Open")) {
                 std::thread t(openFile);
                 t.detach();
+            }
+            ImGui::EndMenu();
+        }
+        if (ImGui::BeginMenu("Visualization")) {
+            if (ImGui::Selectable("Spectrum", m_renderSpectrum)) {
+                toggleRenderSpectrum();
             }
             ImGui::EndMenu();
         }
