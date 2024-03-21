@@ -74,11 +74,10 @@ int main()
         // Render
         RenderCommand::setClearColor({0.0,0.0,0.1, 1.0});
         RenderCommand::clear();
-        Spectrum::render(samplesSinceLastFrame / 2, music, renderer);
+        Spectrum::render(samplesSinceLastFrame, music, renderer);
         GUI::render();
         glfwSwapBuffers(window.ptr());
     }
-
 
     return 0;
 }

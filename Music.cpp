@@ -48,6 +48,8 @@ void FFT::execute(size_t numSamples, const SoundData& soundData)
         m_dataIndex += soundData.info().channels;
     }
 
+    m_plan = fftw_plan_dft_1d(static_cast<int>(m_dataBlockSize), m_in, m_out, FFTW_FORWARD, FFTW_ESTIMATE);
+
     fftw_execute(m_plan);
 }
 
