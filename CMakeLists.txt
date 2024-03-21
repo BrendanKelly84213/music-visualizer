@@ -53,6 +53,8 @@ add_executable(music-visualizer main.cpp
         /home/brendan/dev/my-stuff/music-visualizer/imgui/backends/imgui_impl_opengl3.cpp
         GUI.cpp
         GUI.h
+        Spectrum.cpp
+        Spectrum.h
 )
 
 target_link_libraries(music-visualizer ${OpenGlLinkers} ${SDL_Linkers} ${LibSndFileLinkers} ${fftwLinkers})

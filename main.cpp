@@ -12,6 +12,7 @@
 #include "SoundData.h"
 #include "RenderCommand.h"
 #include "GUI.h"
+#include "Spectrum.h"
 
 namespace fs = std::filesystem;
 
@@ -73,14 +74,7 @@ int main()
         // Render
         RenderCommand::setClearColor({0.0,0.0,0.1, 1.0});
         RenderCommand::clear();
-
-        auto numSamplesShown = samplesSinceLastFrame / 2;
-        auto rectangleWidth = 2.0 / static_cast<double>(numSamplesShown);
-        for (size_t i = 0; i < numSamplesShown; i++) {
-            auto rectangleHeight = music->fftMagnitudeAt(i) * .01;
-            renderer->drawQuad({rectangleWidth, rectangleHeight}, {(static_cast<double>(i) * rectangleWidth - 1.0), 0.0}, {1.0, 0.2, 0.3, 1.0});
-            RenderCommand::drawIndexed(6);
-        }
+        Spectrum::render(samplesSinceLastFrame / 2, music, renderer);
         GUI::render();
         glfwSwapBuffers(window.ptr());
     }
