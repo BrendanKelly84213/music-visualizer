@@ -66,15 +66,15 @@ Result<std::shared_ptr<Music>> Music::create(size_t dataBlockSize)
     return music;
 }
 
-bool Music::load(const std::string& filename)
+bool Music::load()
 {
-    auto raw_ptr = Mix_LoadMUS(filename.c_str());
+    auto raw_ptr = Mix_LoadMUS(m_songPath.c_str());
     if (raw_ptr == nullptr) {
         return false;
     }
     m_fft->resetDataIndex();
     m_ptr = std::shared_ptr<Mix_Music>(raw_ptr, Mix_FreeMusic);
-    m_soundData = TRY(SoundData::create(filename), false);
+    m_soundData = TRY(SoundData::create(m_songPath), false);
     m_loaded = true;
     return true;
 }

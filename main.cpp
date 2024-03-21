@@ -6,48 +6,17 @@
 #include <algorithm>
 #include <thread>
 
-#include "imgui.h"
 #include "Window.h"
 #include "Music.h"
 #include "Renderer.h"
 #include "SoundData.h"
 #include "RenderCommand.h"
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_opengl3.h"
+#include "GUI.h"
 
 namespace fs = std::filesystem;
 
 unsigned int dataBlockSize = 1024;
-std::string songPath;
 float frameRate = 0;
-
-static void mainMenu(const std::shared_ptr<Music>& music)
-{
-    auto openFile = [&]() {
-        char filename[1024];
-        FILE *f = popen(R"(zenity --file-selection  --file-filter=*.wav)", "r");
-        fgets(filename, 1024, f);
-        std::string filenameString = filename;
-        filenameString.erase(std::remove(filenameString.begin(), filenameString.end(), '\n'), filenameString.cend());
-        if (!songPath.empty() && songPath == filenameString) {
-            return;
-        }
-        songPath = filenameString;
-        music->setLoaded(false);
-    };
-
-    if (ImGui::BeginMainMenuBar()) {
-        if (ImGui::BeginMenu("File")) {
-            if (ImGui::MenuItem("Open")) {
-                std::thread t(openFile);
-                t.detach();
-            }
-            ImGui::EndMenu();
-        }
-        ImGui::Text("Immediate Frame Rate: %.1f", frameRate);
-        ImGui::EndMainMenuBar();
-    }
-}
 
 int main()
 {
@@ -62,16 +31,7 @@ int main()
         return 1;
     }
 
-    // Setup Dear ImGui context
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-    ImGui::StyleColorsDark();
-
-    // Setup Platform/Renderer backends
-    ImGui_ImplGlfw_InitForOpenGL(window.ptr(), true);
-    ImGui_ImplOpenGL3_Init();
+    GUI gui(window);
 
     auto music = TRY(Music::create(dataBlockSize), 1);
 
@@ -90,17 +50,15 @@ int main()
         frameRate = 1.0f / deltaTime;
         lastTime = currentTime;
         glfwPollEvents();
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
-        mainMenu(music);
+        GUI::newFrame();
+        GUI::mainMenu(music, frameRate);
 
         if (glfwGetKey(window.ptr(), GLFW_KEY_ESCAPE) == GLFW_PRESS) {
             glfwSetWindowShouldClose(window.ptr(), true);
         }
 
-        if (!music->loaded() && !songPath.empty()) {
-            if (music->load(songPath)) {
+        if (!music->loaded() && !music->songPath().empty()) {
+            if (music->load()) {
                 samplerate = music->info().samplerate;
             }
         }
@@ -123,14 +81,10 @@ int main()
             renderer->drawQuad({rectangleWidth, rectangleHeight}, {(static_cast<double>(i) * rectangleWidth - 1.0), 0.0}, {1.0, 0.2, 0.3, 1.0});
             RenderCommand::drawIndexed(6);
         }
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        GUI::render();
         glfwSwapBuffers(window.ptr());
     }
 
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
 
     return 0;
 }

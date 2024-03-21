@@ -44,19 +44,22 @@ public:
     ~Music() { Mix_CloseAudio(); }
 
     void executeFFT(size_t numSamples) { m_fft->execute(numSamples, m_soundData); }
-    bool load(const std::string& filename);
+    bool load();
 
     static bool playing() { return Mix_PlayingMusic(); }
     void play(int loops = -1) { Mix_PlayMusic(m_ptr.get(), loops); }
     void setLoaded(bool loaded) { m_loaded = loaded; }
+    void setSongPath(const std::string& songPath) { m_songPath = songPath; }
     [[nodiscard]] double fftMagnitudeAt(size_t i) const { return m_fft->magnitudeAt(i); }
     [[nodiscard]] bool loaded() const { return m_loaded; }
     [[nodiscard]] SF_INFO const& info() const { return m_soundData.info(); }
+    [[nodiscard]] std::string const& songPath() const { return m_songPath; }
 private:
     SoundData m_soundData;
     std::shared_ptr<Mix_Music> m_ptr {};
     std::shared_ptr<FFT> m_fft {};
     bool m_loaded;
+    std::string m_songPath {};
 };
 
 #endif //MUSIC_H
