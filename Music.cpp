@@ -51,6 +51,12 @@ void FFT::execute(size_t numSamples, const SoundData& soundData)
     m_plan = fftw_plan_dft_1d(static_cast<int>(m_dataBlockSize), m_in, m_out, FFTW_FORWARD, FFTW_ESTIMATE);
 
     fftw_execute(m_plan);
+
+    double total = 0.0;
+    for (size_t in_index = 0; in_index < m_dataBlockSize && m_dataIndex < soundData.count(); ++in_index) {
+        total += magnitudeAt(in_index);
+    }
+    m_average = total / (numSamples > 0 ? numSamples : 1.0);
 }
 
 Result<std::shared_ptr<Music>> Music::create(size_t dataBlockSize)

@@ -55,6 +55,8 @@ add_executable(music-visualizer main.cpp
         GUI.h
         Spectrum.cpp
         Spectrum.h
+        PerlinNoise.cpp
+        PerlinNoise.h
 )
 
 target_link_libraries(music-visualizer ${OpenGlLinkers} ${SDL_Linkers} ${LibSndFileLinkers} ${fftwLinkers})

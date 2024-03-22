@@ -88,7 +88,21 @@ void Renderer::drawQuad(const glm::vec4& color, const glm::mat4& transform)
     m_quadShader->setUniformMat4f("u_transform", transform);
 
     m_vertexBuffer->setLayout({
-          {VertexLayoutType::Float3, "aPos"}
+      {VertexLayoutType::Float3, "aPos"}
+    });
+
+    m_vertexArray->addVertexBuffer(m_vertexBuffer);
+}
+
+void Renderer::drawShaderQuad(float variable, const glm::mat4 &transform)
+{
+    m_quadShader->use();
+    m_quadShader->setUniform1f("u_time", variable);
+    m_quadShader->setUniform2f("u_resolution", {800, 600});
+    m_quadShader->setUniformMat4f("u_transform", transform);
+
+    m_vertexBuffer->setLayout({
+        {VertexLayoutType::Float3, "aPos"}
     });
 
     m_vertexArray->addVertexBuffer(m_vertexBuffer);

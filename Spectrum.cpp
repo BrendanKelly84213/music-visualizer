@@ -7,6 +7,9 @@
 
 void Spectrum::render(size_t numSamplesShown, const std::shared_ptr<Music>& music, const std::shared_ptr<Renderer>& renderer)
 {
+    if (renderer->usingCustomShader()) {
+        renderer->loadDefaultShader();
+    }
     auto rectangleWidth = 2.0 / static_cast<double>(numSamplesShown);
     for (size_t i = 0; i < numSamplesShown; i++) {
         auto rectangleHeight = music->fftMagnitudeAt(i) * .01;

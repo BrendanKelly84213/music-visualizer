@@ -25,6 +25,12 @@ public:
     Result<unsigned int> load(const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
     Result<unsigned int> loadFromRaw(const std::string &vertexShaderCode, const std::string &fragmentShaderCode);
 
+    void setUniform1f(const std::string& name, float value) const;
+    void setUniform2f(const std::string& name, float x, float y) const;
+    void setUniform2f(const std::string& name, const glm::vec2& value) const
+    {
+        setUniform2f(name, value.x, value.y);
+    }
     void setUniform4f(const std::string& name, float x, float y, float z, float w) const;
     void setUniform4f(const std::string& name, const glm::vec4& value) const
     {

@@ -25,6 +25,7 @@ public:
     void execute(size_t numSamples, const SoundData& soundData);
     void resetDataIndex() { m_dataIndex = 0; }
     [[nodiscard]] double magnitudeAt(size_t i) const { return std::sqrt(m_out[i][0] * m_out[i][0] + m_out[i][1] * m_out[i][1]); }
+    [[nodiscard]] double average() const { return m_average; }
 private:
 
     size_t m_dataBlockSize {};
@@ -32,6 +33,7 @@ private:
     fftw_complex* m_out {};
     fftw_plan_s* m_plan {};
     size_t m_dataIndex {0};
+    double m_average {0.0};
 };
 
 class Music {
@@ -54,6 +56,7 @@ public:
     [[nodiscard]] bool loaded() const { return m_loaded; }
     [[nodiscard]] SF_INFO const& info() const { return m_soundData.info(); }
     [[nodiscard]] std::string const& songPath() const { return m_songPath; }
+    [[nodiscard]] double fftAverage() const { return m_fft->average(); }
 private:
     SoundData m_soundData;
     std::shared_ptr<Mix_Music> m_ptr {};

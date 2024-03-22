@@ -12,7 +12,7 @@
 
 
 GUI::GUI(const Window& window)
-: m_renderSpectrum(false)
+: m_renderSpectrum(false), m_renderNoise(false)
 {
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -59,14 +59,26 @@ void GUI::mainMenu(const std::shared_ptr<Music>& music, float frameRate)
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("Visualization")) {
+            // FIXME: This is the worst shit I've ever done! Very bad!
             if (ImGui::Selectable("Spectrum", m_renderSpectrum)) {
+                if (m_renderNoise)
+                    toggleNoise();
                 toggleRenderSpectrum();
+            }
+            if (ImGui::Selectable("Noise", m_renderNoise)) {
+                if (m_renderSpectrum)
+                    toggleRenderSpectrum();
+                toggleNoise();
             }
             ImGui::EndMenu();
         }
         ImGui::Text("Immediate Frame Rate: %.1f", frameRate);
         ImGui::EndMainMenuBar();
     }
+}
+
+void GUI::debug()
+{
 }
 
 void GUI::render()

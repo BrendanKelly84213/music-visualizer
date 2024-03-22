@@ -19,13 +19,25 @@ public:
     static std::shared_ptr<Renderer> create();
     void drawQuad(const glm::vec2& dimensions, const glm::vec2& position, const glm::vec4& color);
     void drawQuad( const glm::vec4 &color, const glm::mat4 &transform = glm::mat4(1.0f));
-
+    void drawShaderQuad(float variable, const glm::mat4& transform = glm::mat4(1.0f));
+    void loadCustomShader(const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
+    {
+        m_usingCustomShader = true;
+        m_quadShader->load(vertexShaderPath, fragmentShaderPath);
+    }
+    void loadDefaultShader()
+    {
+        m_usingCustomShader = false;
+        m_quadShader->loadFromRaw(s_quadVertexShaderSrc, s_quadFragmentShaderSrc);
+    }
     [[nodiscard]] std::shared_ptr<IndexBuffer> indexBuffer() const { return m_indexBuffer; }
+    [[nodiscard]] bool usingCustomShader() const { return m_usingCustomShader; }
 private:
     std::shared_ptr<Shader> m_quadShader {};
     std::shared_ptr<VertexArray> m_vertexArray {};
     std::shared_ptr<VertexBuffer> m_vertexBuffer {};
     std::shared_ptr<IndexBuffer> m_indexBuffer {};
+    bool m_usingCustomShader {false};
 
     // FIXME: Temporary!
     static float s_quadVertices[12];

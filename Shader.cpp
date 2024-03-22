@@ -89,6 +89,18 @@ Result<unsigned int> Shader::loadFromRaw(const std::string& vertexShaderCode, co
     return m_id;
 }
 
+void Shader::setUniform1f(const std::string &name, float value) const
+{
+    auto location = glGetUniformLocation(m_id, name.c_str());
+    glUniform1f(location, value);
+}
+
+void Shader::setUniform2f(const std::string &name, float x, float y) const
+{
+    auto location = glGetUniformLocation(m_id, name.c_str());
+    glUniform2f(location, x, y);
+}
+
 void Shader::setUniform4f(const std::string& name, float x, float y, float z, float w) const
 {
     auto location = glGetUniformLocation(m_id, name.c_str());
@@ -100,4 +112,6 @@ void Shader::setUniformMat4f(const std::string &name, const glm::mat4 &value) co
     auto location = glGetUniformLocation(m_id, name.c_str());
     glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
 }
+
+
 
