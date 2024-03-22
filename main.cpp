@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <algorithm>
 #include <thread>
+#include <glm/ext/matrix_transform.hpp>
 
 #include "Window.h"
 #include "Music.h"
@@ -67,6 +68,7 @@ int main()
     float left = 0.0;
     float right = 1.0;
     bool useSmoothStep = false;
+    float color[4];
     while (!glfwWindowShouldClose(window.ptr())) {
         auto currentTime = glfwGetTime();
         auto deltaTime = currentTime - lastTime;
@@ -96,9 +98,6 @@ int main()
         // Render
         RenderCommand::setClearColor({0.0,0.0,0.1, 1.0});
         RenderCommand::clear();
-        if (gui.renderSpectrum()) {
-            Spectrum::render(samplesSinceLastFrame, music, renderer);
-        }
 
         auto smoothstepAverage = smoothstep(left, right, music->fftAverage());
         if (useSmoothStep)
@@ -113,13 +112,19 @@ int main()
         ImGui::Text("smoothstep average: %.3f", smoothstepAverage);
         ImGui::Text("speed: %.3f", speed);
         ImGui::Checkbox("use smoothstep", &useSmoothStep);
+        ImGui::ColorPicker4("Color", color);
 
         if (gui.renderNoise()) {
             if (!renderer->usingCustomShader()) {
                 renderer->loadCustomShader(perlinNoise->vertexShaderPath(), perlinNoise->fragmentShaderPath());
             }
-            renderer->drawShaderQuad(speed * scaleFactor);
+            auto transform = glm::scale(glm::mat4(1.0f), glm::vec3(2.0, 2.0, 0.0));
+            renderer->drawShaderQuad(speed * scaleFactor, transform);
             RenderCommand::drawIndexed(6);
+        }
+
+        if (gui.renderSpectrum()) {
+            Spectrum::render(samplesSinceLastFrame, music, renderer, glm::vec4(color[0], color[1], color[2], color[3]));
         }
 
         GUI::render();

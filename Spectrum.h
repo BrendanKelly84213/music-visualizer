@@ -12,7 +12,7 @@
 
 class Spectrum {
 public:
-    static void render(size_t numSamplesShown, const std::shared_ptr<Music>& music, const std::shared_ptr<Renderer>& renderer);
+    static void render(size_t numSamplesShown, const std::shared_ptr<Music>& music, const std::shared_ptr<Renderer>& renderer, const glm::vec4& color);
 };
 
 

@@ -61,13 +61,9 @@ void GUI::mainMenu(const std::shared_ptr<Music>& music, float frameRate)
         if (ImGui::BeginMenu("Visualization")) {
             // FIXME: This is the worst shit I've ever done! Very bad!
             if (ImGui::Selectable("Spectrum", m_renderSpectrum)) {
-                if (m_renderNoise)
-                    toggleNoise();
                 toggleRenderSpectrum();
             }
             if (ImGui::Selectable("Noise", m_renderNoise)) {
-                if (m_renderSpectrum)
-                    toggleRenderSpectrum();
                 toggleNoise();
             }
             ImGui::EndMenu();
