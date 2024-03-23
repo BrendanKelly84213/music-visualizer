@@ -39,10 +39,11 @@ public:
     void setUniformMat4f(const std::string& name, const glm::mat4& value) const;
 
     [[nodiscard]] unsigned int id() const { return m_id; }
-
+    [[nodiscard]] bool loaded() const { return m_loaded; }
 private:
     unsigned int m_id {0};
     char m_infoLog[512] {};
+    bool m_loaded {false};
 };
 
 

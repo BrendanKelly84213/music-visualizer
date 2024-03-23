@@ -51,12 +51,13 @@ unsigned int Renderer::s_quadIndices[6] = {
 std::shared_ptr<Renderer> Renderer::create()
 {
     auto renderer = std::make_shared<Renderer>(Renderer());
-    renderer->m_quadShader = Shader::create();
-    auto result = renderer->m_quadShader->loadFromRaw(s_quadVertexShaderSrc, s_quadFragmentShaderSrc);
+    auto defaultShader = Shader::create();
+    auto result = defaultShader->loadFromRaw(s_quadVertexShaderSrc, s_quadFragmentShaderSrc);
     if (result.isError()) {
         std::cout << result.error().message() << '\n';
         return nullptr;
     }
+    renderer->m_shaders["default"] = defaultShader;
     renderer->m_vertexArray = VertexArray::create();
     if (renderer->m_vertexArray == nullptr) {
         std::cout << "vertex array is null\n";
@@ -83,9 +84,9 @@ void Renderer::drawQuad(const glm::vec2& dimensions, const glm::vec2 &position, 
 
 void Renderer::drawQuad(const glm::vec4& color, const glm::mat4& transform)
 {
-    m_quadShader->use();
-    m_quadShader->setUniform4f("u_color", color);
-    m_quadShader->setUniformMat4f("u_transform", transform);
+    m_shaders["default"]->use();
+    m_shaders["default"]->setUniform4f("u_color", color);
+    m_shaders["default"]->setUniformMat4f("u_transform", transform);
 
     m_vertexBuffer->setLayout({
       {VertexLayoutType::Float3, "aPos"}
@@ -94,12 +95,12 @@ void Renderer::drawQuad(const glm::vec4& color, const glm::mat4& transform)
     m_vertexArray->addVertexBuffer(m_vertexBuffer);
 }
 
-void Renderer::drawShaderQuad(float variable, const glm::mat4 &transform)
+void Renderer::drawShaderQuad(const std::string& shaderName, float variable, const glm::mat4 &transform)
 {
-    m_quadShader->use();
-    m_quadShader->setUniform1f("u_time", variable);
-    m_quadShader->setUniform2f("u_resolution", {800, 600});
-    m_quadShader->setUniformMat4f("u_transform", transform);
+    m_shaders[shaderName]->use();
+    m_shaders[shaderName]->setUniform1f("u_time", variable);
+    m_shaders[shaderName]->setUniform2f("u_resolution", {800, 600});
+    m_shaders[shaderName]->setUniformMat4f("u_transform", transform);
 
     m_vertexBuffer->setLayout({
         {VertexLayoutType::Float3, "aPos"}

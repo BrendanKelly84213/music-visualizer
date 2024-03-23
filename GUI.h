@@ -24,7 +24,6 @@ public:
 private:
     bool m_renderSpectrum;
     bool m_renderNoise;
-    // FIXME: Temporary!
 };
 
 

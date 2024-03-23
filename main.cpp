@@ -115,11 +115,12 @@ int main()
         ImGui::ColorPicker4("Color", color);
 
         if (gui.renderNoise()) {
-            if (!renderer->usingCustomShader()) {
-                renderer->loadCustomShader(perlinNoise->vertexShaderPath(), perlinNoise->fragmentShaderPath());
+            if (!renderer->shaderLoaded("noise")) {
+                renderer->loadShader("noise", perlinNoise->vertexShaderPath(), perlinNoise->fragmentShaderPath());
             }
+
             auto transform = glm::scale(glm::mat4(1.0f), glm::vec3(2.0, 2.0, 0.0));
-            renderer->drawShaderQuad(speed * scaleFactor, transform);
+            renderer->drawShaderQuad("noise", speed * scaleFactor, transform);
             RenderCommand::drawIndexed(6);
         }
 

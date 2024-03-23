@@ -44,8 +44,7 @@ int Shader::linkProgram(unsigned int vertexShader,  unsigned int fragmentShader)
     glAttachShader(program, fragmentShader);
     glLinkProgram(program);
     glGetProgramiv(program, GL_LINK_STATUS, &success);
-    if(!success)
-    {
+    if(!success) {
         glGetProgramInfoLog(program, 512, nullptr, m_infoLog);
         return -1;
     }
@@ -85,6 +84,8 @@ Result<unsigned int> Shader::loadFromRaw(const std::string& vertexShaderCode, co
 
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
+
+    m_loaded = true;
 
     return m_id;
 }

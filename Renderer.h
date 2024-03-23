@@ -9,6 +9,7 @@
 #include <glm/glm.hpp>
 #include <string>
 #include <memory>
+#include <unordered_map>
 #include "Shader.h"
 #include "VertexArray.h"
 #include "IndexBuffer.h"
@@ -18,31 +19,38 @@ class Renderer {
 public:
     static std::shared_ptr<Renderer> create();
     void drawQuad(const glm::vec2& dimensions, const glm::vec2& position, const glm::vec4& color);
-    void drawQuad( const glm::vec4 &color, const glm::mat4 &transform = glm::mat4(1.0f));
-    void drawShaderQuad(float variable, const glm::mat4& transform = glm::mat4(1.0f));
-    void loadCustomShader(const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
+    void drawQuad(const glm::vec4 &color, const glm::mat4 &transform = glm::mat4(1.0f));
+    void drawShaderQuad(const std::string& shaderName, float variable, const glm::mat4& transform = glm::mat4(1.0f));
+    void loadShader(const std::string& name, const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
     {
-        m_usingCustomShader = true;
-        m_quadShader->load(vertexShaderPath, fragmentShaderPath);
-    }
-    void loadDefaultShader()
-    {
-        m_usingCustomShader = false;
-        m_quadShader->loadFromRaw(s_quadVertexShaderSrc, s_quadFragmentShaderSrc);
+        // FIXME: Temporary debug line, load shader is apparently fallible!
+        if (m_shaders.find(name) != m_shaders.end()) {
+            if (m_shaders.at(name)->loaded()) {
+                std::cout << "Shader already loaded\n";
+                return;
+            }
+        }
+
+        m_shaders[name] = Shader::create();
+        m_shaders[name]->load(vertexShaderPath, fragmentShaderPath);
     }
     [[nodiscard]] std::shared_ptr<IndexBuffer> indexBuffer() const { return m_indexBuffer; }
-    [[nodiscard]] bool usingCustomShader() const { return m_usingCustomShader; }
+    bool shaderLoaded(const std::string& name)
+    {
+        if (m_shaders.find(name) != m_shaders.end())
+            return m_shaders.at(name)->loaded();
+        return false;
+    }
 private:
-    std::shared_ptr<Shader> m_quadShader {};
+    std::unordered_map<std::string, std::shared_ptr<Shader>> m_shaders;
     std::shared_ptr<VertexArray> m_vertexArray {};
     std::shared_ptr<VertexBuffer> m_vertexBuffer {};
     std::shared_ptr<IndexBuffer> m_indexBuffer {};
-    bool m_usingCustomShader {false};
 
-    // FIXME: Temporary!
     static float s_quadVertices[12];
     static unsigned int s_quadIndices[6];
 
+    // FIXME: Temporary!
     static std::string s_quadVertexShaderSrc;
     static std::string s_quadFragmentShaderSrc;
 };
