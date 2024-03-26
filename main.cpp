@@ -16,6 +16,7 @@
 #include "Spectrum.h"
 #include "imgui.h"
 #include "PerlinNoise.h"
+#include "config.h"
 
 namespace fs = std::filesystem;
 
@@ -63,11 +64,8 @@ int main()
 
     int samplerate = 0;
     double lastTime = 0.0f;
-    double speed = 0.1;
-    float scaleFactor = 0.0;
-    float left = 0.0;
-    float right = 1.0;
-    bool useSmoothStep = false;
+    double speed = 0.0;
+    float scaleFactor = 0.1;
     float color[4];
     while (!glfwWindowShouldClose(window.ptr())) {
         auto currentTime = glfwGetTime();
@@ -76,7 +74,7 @@ int main()
         lastTime = currentTime;
         glfwPollEvents();
         GUI::newFrame();
-        gui.mainMenu(music, frameRate);
+        gui.mainMenu(music, renderer, frameRate);
 
         if (glfwGetKey(window.ptr(), GLFW_KEY_ESCAPE) == GLFW_PRESS) {
             glfwSetWindowShouldClose(window.ptr(), true);
@@ -98,29 +96,20 @@ int main()
         // Render
         RenderCommand::setClearColor({0.0,0.0,0.1, 1.0});
         RenderCommand::clear();
+        speed += music->fftAverage();
 
-        auto smoothstepAverage = smoothstep(left, right, music->fftAverage());
-        if (useSmoothStep)
-            speed += smoothstepAverage;
-        else
-            speed += music->fftAverage();
-
-        ImGui::SliderFloat("speed", &scaleFactor, 0.0, 1.0);
-        ImGui::SliderFloat("left", &left, 0.0, 10.0);
-        ImGui::SliderFloat("right", &right, 0.0, 10.0);
+        ImGui::SliderFloat("speed scaleFactor", &scaleFactor, 0.0, .1);
         ImGui::Text("average: %.3f", music->fftAverage());
-        ImGui::Text("smoothstep average: %.3f", smoothstepAverage);
         ImGui::Text("speed: %.3f", speed);
-        ImGui::Checkbox("use smoothstep", &useSmoothStep);
         ImGui::ColorPicker4("Color", color);
 
-        if (gui.renderNoise()) {
-            if (!renderer->shaderLoaded("noise")) {
-                renderer->loadShader("noise", perlinNoise->vertexShaderPath(), perlinNoise->fragmentShaderPath());
+        if (gui.renderShaderQuad()) {
+            auto& currentShader = gui.currentShaderQuad();
+            if (!renderer->shaderLoaded(currentShader)) {
+                renderer->loadShader(currentShader, LOCAL_PATH("assets/shaders/vertex-shader.glsl"), currentShader);
             }
-
             auto transform = glm::scale(glm::mat4(1.0f), glm::vec3(2.0, 2.0, 0.0));
-            renderer->drawShaderQuad("noise", speed * scaleFactor, transform);
+            renderer->drawShaderQuad(gui.currentShaderQuad(), speed * scaleFactor, transform);
             RenderCommand::drawIndexed(6);
         }
 
