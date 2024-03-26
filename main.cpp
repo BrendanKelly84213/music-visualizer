@@ -106,10 +106,10 @@ int main()
         if (gui.renderShaderQuad()) {
             auto& currentShader = gui.currentShaderQuad();
             if (!renderer->shaderLoaded(currentShader)) {
-                renderer->loadShader(currentShader, LOCAL_PATH("assets/shaders/vertex-shader.glsl"), currentShader);
+                TRY(renderer->loadShader(currentShader, LOCAL_PATH("assets/shaders/vertex-shader.glsl"), currentShader), 1);
             }
             auto transform = glm::scale(glm::mat4(1.0f), glm::vec3(2.0, 2.0, 0.0));
-            renderer->drawShaderQuad(gui.currentShaderQuad(), speed * scaleFactor, transform);
+            renderer->drawShaderQuad(currentShader, speed * scaleFactor, transform);
             RenderCommand::drawIndexed(6);
         }
 

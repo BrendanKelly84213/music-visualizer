@@ -1,6 +1,3 @@
-// Author @patriciogv - 2015
-// http://patriciogonzalezvivo.com
-
 #version 330 core
 out vec4 FragColor;
 
@@ -8,74 +5,34 @@ uniform vec2 u_resolution;
 uniform vec2 u_mouse;
 uniform float u_time;
 
-float random (in vec2 _st) {
-    return fract(sin(dot(_st.xy,
-                         vec2(12.9898,78.233)))*
-                 43758.5453123);
-}
+float mod289(float x){return x - floor(x * (1.0 / 289.0)) * 289.0;}
+vec4 mod289(vec4 x){return x - floor(x * (1.0 / 289.0)) * 289.0;}
+vec4 perm(vec4 x){return mod289(((x * 34.0) + 1.0) * x);}
 
-// Based on Morgan McGuire @morgan3d
-// https://www.shadertoy.com/view/4dS3Wd
-float noise (in vec2 _st) {
-    vec2 i = floor(_st);
-    vec2 f = fract(_st);
+float noise(vec3 p){
+    vec3 a = floor(p);
+    vec3 d = p - a;
+    d = d * d * (3.0 - 2.0 * d);
 
-    // Four corners in 2D of a tile
-    float a = random(i);
-    float b = random(i + vec2(1.0, 0.0));
-    float c = random(i + vec2(0.0, 1.0));
-    float d = random(i + vec2(1.0, 1.0));
+    vec4 b = a.xxyy + vec4(0.0, 1.0, 0.0, 1.0);
+    vec4 k1 = perm(b.xyxy);
+    vec4 k2 = perm(k1.xyxy + b.zzww);
 
-    vec2 u = f * f * (3.0 - 2.0 * f);
+    vec4 c = k2 + a.zzzz;
+    vec4 k3 = perm(c);
+    vec4 k4 = perm(c + 1.0);
 
-    return mix(a, b, u.x) +
-    (c - a)* u.y * (1.0 - u.x) +
-    (d - b) * u.x * u.y;
-}
+    vec4 o1 = fract(k3 * (1.0 / 41.0));
+    vec4 o2 = fract(k4 * (1.0 / 41.0));
 
-#define NUM_OCTAVES 5
+    vec4 o3 = o2 * d.z + o1 * (1.0 - d.z);
+    vec2 o4 = o3.yw * d.x + o3.xz * (1.0 - d.x);
 
-float fbm ( in vec2 _st) {
-    float v = 0.0;
-    float a = 0.5;
-    vec2 shift = vec2(100.0);
-    // Rotate to reduce axial bias
-    mat2 rot = mat2(cos(0.5), sin(0.5),
-                    -sin(0.5), cos(0.50));
-    for (int i = 0; i < NUM_OCTAVES; ++i) {
-        v += a * noise(_st);
-        _st = rot * _st * 2.0 + shift;
-        a *= 0.5;
-    }
-    return v;
+    return o4.y * d.y + o4.x * (1.0 - d.y);
 }
 
 void main() {
     vec2 st = gl_FragCoord.xy/u_resolution.xy*3.;
-    // st += st * abs(sin(u_time*0.1)*3.0);
-    vec3 color = vec3(0.0);
-
-    vec2 q = vec2(0.);
-    q.x = fbm( st + 0.00*u_time);
-    q.y = fbm( st + vec2(1.0));
-
-    vec2 r = vec2(0.);
-    r.x = fbm( st + 1.0*q + vec2(1.7,9.2)+ 0.15*u_time );
-    r.y = fbm( st + 1.0*q + vec2(8.3,2.8)+ 0.126*u_time);
-
-    float f = fbm(st+r);
-
-    color = mix(vec3(0.101961,0.619608,0.666667),
-                vec3(0.666667,0.666667,0.498039),
-                clamp((f*f)*4.0,0.0,1.0));
-
-    color = mix(color,
-                vec3(0,0,0.164706),
-                clamp(length(q),0.0,1.0));
-
-    color = mix(color,
-                vec3(0.666667,1,1),
-                clamp(length(r.x),0.0,1.0));
-
-    gl_FragColor = vec4((f*f*f+.6*f*f+.5*f)*color,1.);
+    vec3 color = vec3(vec2(noise(st)), 1.0);
+    gl_FragColor = vec4(color, 1.);
 }

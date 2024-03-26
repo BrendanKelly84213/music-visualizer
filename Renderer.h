@@ -21,24 +21,26 @@ public:
     void drawQuad(const glm::vec2& dimensions, const glm::vec2& position, const glm::vec4& color);
     void drawQuad(const glm::vec4 &color, const glm::mat4 &transform = glm::mat4(1.0f));
     void drawShaderQuad(const std::string& shaderName, float variable, const glm::mat4& transform = glm::mat4(1.0f));
-    void loadShader(const std::string& name, const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
+    Result<unsigned int> loadShader(const std::string& name, const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
     {
         // FIXME: Temporary debug line, load shader is apparently fallible!
         if (m_shaders.find(name) != m_shaders.end()) {
             if (m_shaders.at(name)->loaded()) {
-                std::cout << "Shader already loaded\n";
-                return;
+                return Error("Shader already loaded\n");
             }
         }
 
         m_shaders[name] = Shader::create();
-        m_shaders[name]->load(vertexShaderPath, fragmentShaderPath);
+        return m_shaders[name]->load(vertexShaderPath, fragmentShaderPath);
     }
     [[nodiscard]] std::shared_ptr<IndexBuffer> indexBuffer() const { return m_indexBuffer; }
     bool shaderLoaded(const std::string& name)
     {
-        if (m_shaders.find(name) != m_shaders.end())
+        if (m_shaders.find(name) != m_shaders.end()) {
+            if (m_shaders.at(name) == nullptr)
+                return false;
             return m_shaders.at(name)->loaded();
+        }
         return false;
     }
 private:
