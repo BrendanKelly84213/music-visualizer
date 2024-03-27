@@ -20,16 +20,9 @@ public:
     static std::shared_ptr<Renderer> create();
     void drawQuad(const glm::vec2& dimensions, const glm::vec2& position, const glm::vec4& color);
     void drawQuad(const glm::vec4 &color, const glm::mat4 &transform = glm::mat4(1.0f));
-    void drawShaderQuad(const std::string& shaderName, float variable, const glm::mat4& transform = glm::mat4(1.0f));
+    bool drawShaderQuad(const std::string& shaderName, float time, const glm::mat4& transform = glm::mat4(1.0f));
     Result<unsigned int> loadShader(const std::string& name, const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
     {
-        // FIXME: Temporary debug line, load shader is apparently fallible!
-        if (m_shaders.find(name) != m_shaders.end()) {
-            if (m_shaders.at(name)->loaded()) {
-                return Error("Shader already loaded\n");
-            }
-        }
-
         m_shaders[name] = Shader::create();
         return m_shaders[name]->load(vertexShaderPath, fragmentShaderPath);
     }

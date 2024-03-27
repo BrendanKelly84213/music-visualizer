@@ -21,14 +21,14 @@ public:
     static void newFrame();
     // FIXME: Temporary! We should be able  to access a variable number of different visuals in the future. So hardcoding presets like this won't work!
     void toggleRenderSpectrum() { m_renderSpectrum = !m_renderSpectrum; }
-    void toggleShaderQuad() { m_renderShaderQuad = !m_renderShaderQuad; }
+    void toggleCustomShader() { m_renderCustomShader = !m_renderCustomShader; }
     void setCurrentShaderQuad(const std::string& name) { m_currentShaderQuad = name; }
     [[nodiscard]] bool renderSpectrum() const { return m_renderSpectrum; }
-    [[nodiscard]] bool renderShaderQuad() const { return m_renderShaderQuad; }
+    [[nodiscard]] bool renderCustomShader() const { return m_renderCustomShader; }
     [[nodiscard]] const std::string& currentShaderQuad() const { return m_currentShaderQuad; }
 private:
     bool m_renderSpectrum;
-    bool m_renderShaderQuad;
+    bool m_renderCustomShader;
     std::string m_currentShaderQuad;
 };
 

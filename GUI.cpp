@@ -12,7 +12,7 @@
 #include "config.h"
 
 GUI::GUI(const Window& window)
-: m_renderSpectrum(false), m_renderShaderQuad(false)
+: m_renderSpectrum(false), m_renderCustomShader(false)
 {
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -38,6 +38,7 @@ void GUI::mainMenu(const std::shared_ptr<Music> &music,
                    const std::shared_ptr<Renderer> &renderer,
                    float frameRate)
 {
+    static bool displayCustomShaderWindow = false;
     auto openMusicFile = [&]() {
         char filename[1024];
         FILE *f = popen(R"(zenity --file-selection  --file-filter=*.wav)", "r");
@@ -52,17 +53,6 @@ void GUI::mainMenu(const std::shared_ptr<Music> &music,
         music->setLoaded(false);
     };
 
-    auto openShaderFile = [&]() {
-        char filename[1024];
-        FILE *f = popen(R"(zenity --file-selection  --file-filter=*.glsl)", "r");
-        fgets(filename, 1024, f);
-        std::string filenameString = filename;
-        filenameString.erase(std::remove(filenameString.begin(), filenameString.end(), '\n'), filenameString.cend());
-        toggleShaderQuad();
-        // FIXME: We may want to render more than one shader quad at a time
-        setCurrentShaderQuad(filenameString);
-    };
-
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginMenu("File")) {
             if (ImGui::MenuItem("Open")) {
@@ -75,18 +65,64 @@ void GUI::mainMenu(const std::shared_ptr<Music> &music,
             if (ImGui::Selectable("Spectrum", m_renderSpectrum)) {
                 toggleRenderSpectrum();
             }
-            if (ImGui::BeginMenu("Shader Quad")) {
-                if (ImGui::MenuItem("Open New")) {
-                    std::thread t(openShaderFile);
-                    t.detach();
-                }
-                ImGui::EndMenu();
+            if (ImGui::Selectable("Custom Shader", displayCustomShaderWindow)) {
+                displayCustomShaderWindow = !displayCustomShaderWindow;
             }
             ImGui::EndMenu();
         }
         ImGui::Text("Immediate Frame Rate: %.1f", frameRate);
         ImGui::EndMainMenuBar();
     }
+
+    if (displayCustomShaderWindow) {
+        // FIXME: Should detach into a seperate thread later... For now blocking because I can't think
+        static std::string vertexFilename;
+        static std::string fragmentFilename;
+        auto openVertexShaderFile = [&]() {
+            char filename[1024];
+            FILE *f = popen(R"(zenity --file-selection  --file-filter=*.glsl)", "r");
+            fgets(filename, 1024, f);
+            std::string filenameString = filename;
+            filenameString.erase(std::remove(filenameString.begin(), filenameString.end(), '\n'), filenameString.cend());
+            vertexFilename = filenameString;
+        };
+
+        auto openFragmentShaderFile = [&]() {
+            char filename[1024];
+            FILE *f = popen(R"(zenity --file-selection  --file-filter=*.glsl)", "r");
+            fgets(filename, 1024, f);
+            std::string filenameString = filename;
+            filenameString.erase(std::remove(filenameString.begin(), filenameString.end(), '\n'), filenameString.cend());
+            fragmentFilename = filenameString;
+        };
+
+        ImGui::Begin("Shader");
+        if (ImGui::MenuItem("Vertex Shader")) {
+            openVertexShaderFile();
+        }
+        if (ImGui::MenuItem("Fragment Shader")) {
+            openFragmentShaderFile();
+        }
+        ImGui::Text("Vertex Shader: %s", vertexFilename.c_str());
+        ImGui::Text("Fragment Shader: %s", fragmentFilename.c_str());
+        static std::string message;
+        if (ImGui::Button("Compile")) {
+            // FIXME: shaders should get unique ID's
+            auto result = renderer->loadShader("custom", vertexFilename, fragmentFilename);
+            if (result.isError()) {
+                message = "Failed to compile: " + result.error().message();
+                std::cout << message << '\n';
+            } else {
+                message = "Compiled shader";
+            }
+        }
+        if (ImGui::Selectable("Draw", m_renderCustomShader)) {
+            toggleCustomShader();
+        }
+        ImGui::Text("%s", message.c_str());
+        ImGui::End();
+    }
+
 }
 
 void GUI::debug()

@@ -96,21 +96,11 @@ int main()
         // Render
         RenderCommand::setClearColor({0.0,0.0,0.1, 1.0});
         RenderCommand::clear();
-        speed += music->fftAverage();
 
-        ImGui::SliderFloat("speed scaleFactor", &scaleFactor, 0.0, .1);
-        ImGui::Text("average: %.3f", music->fftAverage());
-        ImGui::Text("speed: %.3f", speed);
-        ImGui::ColorPicker4("Color", color);
-
-        if (gui.renderShaderQuad()) {
-            auto& currentShader = gui.currentShaderQuad();
-            if (!renderer->shaderLoaded(currentShader)) {
-                TRY(renderer->loadShader(currentShader, LOCAL_PATH("assets/shaders/vertex-shader.glsl"), currentShader), 1);
+        if (gui.renderCustomShader()) {
+            if (!renderer->drawShaderQuad("custom", (float)currentTime)) {
+                gui.toggleCustomShader();
             }
-            auto transform = glm::scale(glm::mat4(1.0f), glm::vec3(2.0, 2.0, 0.0));
-            renderer->drawShaderQuad(currentShader, speed * scaleFactor, transform);
-            RenderCommand::drawIndexed(6);
         }
 
         if (gui.renderSpectrum()) {

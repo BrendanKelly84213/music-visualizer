@@ -95,10 +95,15 @@ void Renderer::drawQuad(const glm::vec4& color, const glm::mat4& transform)
     m_vertexArray->addVertexBuffer(m_vertexBuffer);
 }
 
-void Renderer::drawShaderQuad(const std::string& shaderName, float variable, const glm::mat4 &transform)
+bool Renderer::drawShaderQuad(const std::string& shaderName, float time, const glm::mat4 &transform)
 {
+    if (m_shaders[shaderName] == nullptr) {
+        std::cout << "No such shader!\n";
+        return false;
+    }
+    // FIXME: Dynamic uniforms
     m_shaders[shaderName]->use();
-    m_shaders[shaderName]->setUniform1f("u_time", variable);
+    m_shaders[shaderName]->setUniform1f("u_time", time);
     m_shaders[shaderName]->setUniform2f("u_resolution", {800, 600});
     m_shaders[shaderName]->setUniformMat4f("u_transform", transform);
 
@@ -107,4 +112,6 @@ void Renderer::drawShaderQuad(const std::string& shaderName, float variable, con
     });
 
     m_vertexArray->addVertexBuffer(m_vertexBuffer);
+    RenderCommand::drawIndexed(6);
+    return true;
 }

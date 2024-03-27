@@ -33,7 +33,7 @@ float noise(vec3 p){
 
 void main() {
     vec2 st = gl_FragCoord.xy/u_resolution.xy*3.;
-    float value = noise(vec3(st, 0.0));
+    float value = noise(vec3(st*4, 1.0));
     vec4 color = vec4(vec3(value), 1.0);
     gl_FragColor = vec4(color);
 }

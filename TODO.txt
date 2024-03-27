@@ -1,0 +1,5 @@
+Fix error handling system
+Hot reloading shaders
+Change shader uniforms on the fly via GUI for preset shaders such as perlin noise etc...
+Have custom shader, then a bunch of presets built on the same system or have preset shaders with associated c++ classes?
+ - Custom shader and presets would require some way of communicating to the GUI what uniforms
