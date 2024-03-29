@@ -64,9 +64,7 @@ int main()
 
     int samplerate = 0;
     double lastTime = 0.0f;
-    double speed = 0.0;
-    float scaleFactor = 0.1;
-    float color[4];
+    float color[4] = {0.5, 0.0, 0.0, 1.0 };
     while (!glfwWindowShouldClose(window.ptr())) {
         auto currentTime = glfwGetTime();
         auto deltaTime = currentTime - lastTime;
