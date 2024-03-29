@@ -4,6 +4,7 @@ out vec4 FragColor;
 uniform vec2 u_resolution;
 uniform vec2 u_mouse;
 uniform float u_time;
+uniform float u_scale;
 
 float mod289(float x){return x - floor(x * (1.0 / 289.0)) * 289.0;}
 vec4 mod289(vec4 x){return x - floor(x * (1.0 / 289.0)) * 289.0;}
@@ -33,7 +34,8 @@ float noise(vec3 p){
 
 void main() {
     vec2 st = gl_FragCoord.xy/u_resolution.xy*3.;
-    float value = noise(vec3(st*4, 1.0));
-    vec4 color = vec4(vec3(value), 1.0);
-    gl_FragColor = vec4(color);
+    st += st * 2;
+    float f = noise(vec3(vec2(st + 0.15 * u_time), 1.0));
+    vec3 color = vec3(f);
+    gl_FragColor = vec4(color,1.);
 }
