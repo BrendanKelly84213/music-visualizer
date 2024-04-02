@@ -97,14 +97,14 @@ void GUI::mainMenu(const std::shared_ptr<Music> &music,
         };
 
         ImGui::Begin("Shader");
-        if (ImGui::MenuItem("Vertex Shader")) {
-            openVertexShaderFile();
+        if (ImGui::MenuItem("Open Vertex Shader")) {
+            std::thread t(openVertexShaderFile);
+            t.detach();
         }
-        if (ImGui::MenuItem("Fragment Shader")) {
-            openFragmentShaderFile();
+        if (ImGui::MenuItem("Open Fragment Shader")) {
+            std::thread t(openFragmentShaderFile);
+            t.detach();
         }
-        ImGui::Text("Vertex Shader: %s", vertexFilename.c_str());
-        ImGui::Text("Fragment Shader: %s", fragmentFilename.c_str());
         static std::string message;
         if (ImGui::Button("Compile")) {
             // FIXME: shaders should get unique ID's

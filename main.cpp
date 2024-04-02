@@ -23,19 +23,6 @@ namespace fs = std::filesystem;
 unsigned int dataBlockSize = 1024;
 float frameRate = 0;
 
-float clamp(float x, float lowerlimit = 0.0f, float upperlimit = 1.0f) {
-    if (x < lowerlimit) return lowerlimit;
-    if (x > upperlimit) return upperlimit;
-    return x;
-}
-
-float smoothstep (float edge0, float edge1, float x) {
-    // Scale, and clamp x to 0..1 range
-    x = clamp((x - edge0) / (edge1 - edge0));
-
-    return x * x * (3.0f - 2.0f * x);
-}
-
 int main()
 {
     Window window(800, 600, "Hello Window");
