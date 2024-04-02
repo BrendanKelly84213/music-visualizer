@@ -9,7 +9,6 @@
 #include "imgui.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_glfw.h"
-#include "config.h"
 
 GUI::GUI(const Window& window)
 : m_renderSpectrum(false), m_renderCustomShader(false)
@@ -33,6 +32,13 @@ GUI::~GUI()
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 }
+
+// FIXME: I am in a rush for some reason and this needs to be refactored later
+struct Uniform {
+    std::string type;
+    std::string name;
+    std::string value;
+};
 
 void GUI::mainMenu(const std::shared_ptr<Music> &music,
                    const std::shared_ptr<Renderer> &renderer,
@@ -75,7 +81,6 @@ void GUI::mainMenu(const std::shared_ptr<Music> &music,
     }
 
     if (displayCustomShaderWindow) {
-        // FIXME: Should detach into a seperate thread later... For now blocking because I can't think
         static std::string vertexFilename;
         static std::string fragmentFilename;
         auto openVertexShaderFile = [&]() {
@@ -105,6 +110,7 @@ void GUI::mainMenu(const std::shared_ptr<Music> &music,
             std::thread t(openFragmentShaderFile);
             t.detach();
         }
+        // FIXME: refactor static variable to something else
         static std::string message;
         if (ImGui::Button("Compile")) {
             // FIXME: shaders should get unique ID's
@@ -120,6 +126,34 @@ void GUI::mainMenu(const std::shared_ptr<Music> &music,
             toggleCustomShader();
         }
         ImGui::Text("%s", message.c_str());
+        if (ImGui::Button("Add Uniform")) {
+            ImGui::OpenPopup("Uniform Modal");
+        }
+        static std::vector<Uniform> uniforms {};
+        if (ImGui::BeginPopupModal("Uniform Modal")) {
+            static char uniformType[128] = "float";
+            static char uniformName[128] = "u_time";
+            static char uniformValue[128] = "0.0f";
+            ImGui::InputTextWithHint("Type", "example: for uniform float u_time -> float", uniformType, IM_ARRAYSIZE(uniformType));
+            ImGui::InputTextWithHint("Name", "example: for uniform float u_time -> u_time", uniformName, IM_ARRAYSIZE(uniformName));
+            ImGui::InputTextWithHint("Value", "example: for uniform float u_time -> 0.0f", uniformValue, IM_ARRAYSIZE(uniformName));
+            if (ImGui::Button("Create")) {
+                uniforms.push_back({ .type = uniformType, .name = uniformName, .value = uniformValue });
+                ImGui::CloseCurrentPopup();
+            }
+            if (ImGui::Button("Close"))
+                ImGui::CloseCurrentPopup();
+            ImGui::EndPopup();
+        }
+        for (auto& uniform : uniforms) {
+            ImGui::Text("%s", std::string("uniform " + uniform.type + " " + uniform.name).c_str());
+            char value[128] = "";
+            memcpy(value, uniform.value.c_str(), uniform.value.size());
+            if (uniform.type == "float") {
+                ImGui::InputText(std::string("Value " + uniform.name).c_str(), value, IM_ARRAYSIZE(value));
+                uniform.value = value;
+            }
+        }
         ImGui::End();
     }
 
