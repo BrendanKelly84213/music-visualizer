@@ -8,6 +8,7 @@ set(LibSndFileLinkers -lsndfile)
 set(fftwLinkers -lfftw3 -lm)
 
 find_package(glfw3 3.3 REQUIRED)
+find_package(glm REQUIRED)
 
 link_directories("${PROJECT_SOURCE_DIR}/external/glad/src")
 include_directories("${PROJECT_SOURCE_DIR}/external/glad/include/")
