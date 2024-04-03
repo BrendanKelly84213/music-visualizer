@@ -2,13 +2,13 @@ cmake_minimum_required(VERSION 3.25)
 project(music-visualizer)
 
 set(CMAKE_CXX_STANDARD 17)
-set(OpenGlLinkers -lglfw3 -lGL -lX11 -lpthread -lXrandr -lXi -ldl)
+set(OpenGlLinkers -lGL -lX11 -lpthread -lXrandr -lXi -ldl)
 set(SDL_Linkers -lSDL2 -lSDL2_mixer)
 set(LibSndFileLinkers -lsndfile)
 set(fftwLinkers -lfftw3 -lm)
 
-link_directories("/usr/local/src/glfw-3.3.9/build/src")
-include_directories("/usr/local/src/glfw-3.3.9/include")
+find_package(glfw3 3.3 REQUIRED)
+
 link_directories("${PROJECT_SOURCE_DIR}/external/glad/src")
 include_directories("${PROJECT_SOURCE_DIR}/external/glad/include/")
 include_directories("${PROJECT_SOURCE_DIR}/imgui")
@@ -60,4 +60,4 @@ add_executable(music-visualizer main.cpp
         config.h
 )
 
-target_link_libraries(music-visualizer ${OpenGlLinkers} ${SDL_Linkers} ${LibSndFileLinkers} ${fftwLinkers})
+target_link_libraries(music-visualizer glfw ${OpenGlLinkers} ${SDL_Linkers} ${LibSndFileLinkers} ${fftwLinkers})
