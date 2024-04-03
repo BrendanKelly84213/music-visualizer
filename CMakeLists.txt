@@ -9,12 +9,12 @@ set(fftwLinkers -lfftw3 -lm)
 
 link_directories("/usr/local/src/glfw-3.3.9/build/src")
 include_directories("/usr/local/src/glfw-3.3.9/include")
-link_directories("/usr/local/src/glad/src")
-include_directories( "/usr/local/src/glad/include")
+link_directories("${PROJECT_SOURCE_DIR}/external/glad/src")
+include_directories("${PROJECT_SOURCE_DIR}/external/glad/include/")
 include_directories("/home/brendan/dev/my-stuff/music-visualizer/imgui")
 
 add_executable(music-visualizer main.cpp
-        /usr/local/src/glad/src/glad.c
+        ${PROJECT_SOURCE_DIR}/external/glad/src/glad.c
         IndexBuffer.h
         IndexBuffer.cpp
         Renderer.cpp
