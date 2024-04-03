@@ -11,7 +11,7 @@ link_directories("/usr/local/src/glfw-3.3.9/build/src")
 include_directories("/usr/local/src/glfw-3.3.9/include")
 link_directories("${PROJECT_SOURCE_DIR}/external/glad/src")
 include_directories("${PROJECT_SOURCE_DIR}/external/glad/include/")
-include_directories("/home/brendan/dev/my-stuff/music-visualizer/imgui")
+include_directories("${PROJECT_SOURCE_DIR}/imgui")
 
 add_executable(music-visualizer main.cpp
         ${PROJECT_SOURCE_DIR}/external/glad/src/glad.c
@@ -42,15 +42,15 @@ add_executable(music-visualizer main.cpp
         RendererAPI.h
         OpenGLRendererAPI.cpp
         OpenGLRendererAPI.h
-        /home/brendan/dev/my-stuff/music-visualizer/imgui/imgui.cpp
-        /home/brendan/dev/my-stuff/music-visualizer/imgui/imgui.h
-        /home/brendan/dev/my-stuff/music-visualizer/imgui/imgui_demo.cpp
-        /home/brendan/dev/my-stuff/music-visualizer/imgui/imgui_draw.cpp
-        /home/brendan/dev/my-stuff/music-visualizer/imgui/imgui_internal.h
-        /home/brendan/dev/my-stuff/music-visualizer/imgui/imgui_tables.cpp
-        /home/brendan/dev/my-stuff/music-visualizer/imgui/imgui_widgets.cpp
-        /home/brendan/dev/my-stuff/music-visualizer/imgui/backends/imgui_impl_glfw.cpp
-        /home/brendan/dev/my-stuff/music-visualizer/imgui/backends/imgui_impl_opengl3.cpp
+        ${PROJECT_SOURCE_DIR}/imgui/imgui.cpp
+        ${PROJECT_SOURCE_DIR}/imgui/imgui.h
+        ${PROJECT_SOURCE_DIR}/imgui/imgui_demo.cpp
+        ${PROJECT_SOURCE_DIR}/imgui/imgui_draw.cpp
+        ${PROJECT_SOURCE_DIR}/imgui/imgui_internal.h
+        ${PROJECT_SOURCE_DIR}/imgui/imgui_tables.cpp
+        ${PROJECT_SOURCE_DIR}/imgui/imgui_widgets.cpp
+        ${PROJECT_SOURCE_DIR}/imgui/backends/imgui_impl_glfw.cpp
+        ${PROJECT_SOURCE_DIR}/imgui/backends/imgui_impl_opengl3.cpp
         GUI.cpp
         GUI.h
         Spectrum.cpp
