@@ -9,6 +9,10 @@ set(fftwLinkers -lfftw3 -lm)
 
 find_package(glfw3 3.3 REQUIRED)
 find_package(glm REQUIRED)
+find_package(SDL2 REQUIRED)
+# https://answers.ros.org/question/253311/how-to-add-sdl2-library-in-cmake/
+find_package(PkgConfig)
+pkg_check_modules(SDL2mixer REQUIRED SDL2_mixer)
 
 link_directories("${PROJECT_SOURCE_DIR}/external/glad/src")
 include_directories("${PROJECT_SOURCE_DIR}/external/glad/include/")
