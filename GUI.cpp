@@ -58,32 +58,38 @@ void ShaderEditor::draw(const std::shared_ptr<Renderer>& renderer)
 
     ImGui::Text("%s", m_compileMessage.c_str());
     if (ImGui::Button("Add Uniform")) {
-        ImGui::OpenPopup("Uniform Modal");
+        ImGui::OpenPopup("Create Uniform Modal");
     }
-
-    if (ImGui::BeginPopupModal("Uniform Modal")) {
-        static char uniformType[128] = "float";
-        static char uniformName[128] = "u_time";
-        static char uniformValue[128] = "0.0f";
-        ImGui::InputTextWithHint("Type", "example: for uniform float u_time -> float", uniformType, IM_ARRAYSIZE(uniformType));
-        ImGui::InputTextWithHint("Name", "example: for uniform float u_time -> u_time", uniformName, IM_ARRAYSIZE(uniformName));
-        ImGui::InputTextWithHint("Value", "example: for uniform float u_time -> 0.0f", uniformValue, IM_ARRAYSIZE(uniformName));
-        if (ImGui::Button("Create")) {
-            m_uniforms.push_back({ .type = uniformType, .name = uniformName, .value = uniformValue });
-            ImGui::CloseCurrentPopup();
+    if (ImGui::BeginPopupModal("Create Uniform Modal")) {
+        auto uniform = m_uniformModal.draw();
+        if (uniform != nullptr) {
+            m_uniforms.push_back(*uniform);
         }
-        if (ImGui::Button("Close"))
-            ImGui::CloseCurrentPopup();
         ImGui::EndPopup();
     }
+
+    ImGui::Text("number of uniforms: %zu", m_uniforms.size());
 
     for (auto& uniform : m_uniforms) {
         ImGui::Text("%s", std::string("uniform " + uniform.type + " " + uniform.name).c_str());
         char value[128] = "";
         memcpy(value, uniform.value.c_str(), uniform.value.size());
+        if (ImGui::Button("Edit")) {
+            ImGui::OpenPopup("Edit Uniform Modal");
+        }
+        if (ImGui::BeginPopupModal("Edit Uniform Modal")) {
+            auto temp = m_uniformModal.draw();
+            if (temp != nullptr) {
+                uniform = *temp;
+            }
+            ImGui::EndPopup();
+        }
         if (uniform.type == "float") {
             ImGui::InputText(std::string("Value " + uniform.name).c_str(), value, IM_ARRAYSIZE(value));
             uniform.value = value;
+            if (m_shader == nullptr) {
+                continue;
+            }
             try {
                 float floatValue = std::stof(uniform.value);
                 m_shader->setUniform1f(uniform.name, floatValue);

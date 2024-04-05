@@ -6,16 +6,17 @@
 #define GUI_H
 
 
+#include <memory>
+
 #include "Music.h"
 #include "Window.h"
 #include "Renderer.h"
+#include "imgui.h"
 
 struct Uniform {
     std::string type;
     std::string name;
     std::string value;
-    // FIXME: Should only contain one value member
-    std::variant<float, glm::vec2, glm::vec3, glm::vec4, glm::mat4> hardValue;
 };
 
 class ShaderEditor {
@@ -23,12 +24,34 @@ public:
     void draw(const std::shared_ptr<Renderer>& renderer);
     [[nodiscard]] bool shouldRenderShader() const { return m_shouldRenderShader; }
 private:
+    struct UniformModal {
+        char uniformType[128] = "float";
+        char uniformName[128] = "u_time";
+        char uniformValue[128] = "0.0f";
+
+        std::shared_ptr<Uniform> draw()
+        {
+            ImGui::InputTextWithHint("Type", "example: for uniform float u_time -> float", uniformType, IM_ARRAYSIZE(uniformType));
+            ImGui::InputTextWithHint("Name", "example: for uniform float u_time -> u_time", uniformName, IM_ARRAYSIZE(uniformName));
+            ImGui::InputTextWithHint("Value", "example: for uniform float u_time -> 0.0f", uniformValue, IM_ARRAYSIZE(uniformName));
+            if (ImGui::Button("Create")) {
+                ImGui::CloseCurrentPopup();
+                return std::make_shared<Uniform>(Uniform{uniformType, uniformName, uniformValue});
+            }
+            if (ImGui::Button("Close")) {
+                ImGui::CloseCurrentPopup();
+            }
+            return nullptr;
+        }
+    };
+
     std::vector<Uniform> m_uniforms;
     bool m_shouldRenderShader {false};
     std::string m_compileMessage;
     std::string m_vertexShaderPath;
     std::string m_fragmentShaderPath;
     std::shared_ptr<Shader> m_shader;
+    UniformModal m_uniformModal;
 };
 
 class GUI {
