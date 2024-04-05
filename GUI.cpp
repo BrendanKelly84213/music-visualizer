@@ -77,6 +77,11 @@ void ShaderEditor::draw(const std::shared_ptr<Renderer>& renderer)
         if (ImGui::Button("Edit")) {
             ImGui::OpenPopup("Edit Uniform Modal");
         }
+        ImGui::SameLine();
+        if (ImGui::Button("Delete")) {
+            m_uniforms.pop_back();
+            continue;
+        }
         if (ImGui::BeginPopupModal("Edit Uniform Modal")) {
             auto temp = m_uniformModal.draw();
             if (temp != nullptr) {
