@@ -82,8 +82,8 @@ int main()
         RenderCommand::setClearColor({0.0,0.0,0.1, 1.0});
         RenderCommand::clear();
 
-        if (gui.renderCustomShader()) {
-            if (!renderer->drawShaderQuad("custom", (float)currentTime)) {
+        if (gui.shouldRenderCustomShader()) {
+            if (!renderer->drawShaderQuad("custom")) {
                 gui.toggleCustomShader();
             }
         }

@@ -60,7 +60,7 @@ static std::string readFileToString(const std::string& filepath)
     return buffer.str();
 }
 
-Result<unsigned int> Shader::load(const std::string &vertexShaderPath, const std::string &fragmentShaderPath)
+Result<Shader*> Shader::load(const std::string &vertexShaderPath, const std::string &fragmentShaderPath)
 {
     std::string vertexShaderCode = readFileToString(vertexShaderPath);
     std::string fragmentShaderCode = readFileToString(fragmentShaderPath);
@@ -68,7 +68,7 @@ Result<unsigned int> Shader::load(const std::string &vertexShaderPath, const std
     return loadFromRaw(vertexShaderCode, fragmentShaderCode);
 }
 
-Result<unsigned int> Shader::loadFromRaw(const std::string& vertexShaderCode, const std::string& fragmentShaderCode)
+Result<Shader*> Shader::loadFromRaw(const std::string& vertexShaderCode, const std::string& fragmentShaderCode)
 {
     int vertexShader = compileShader(vertexShaderCode, GL_VERTEX_SHADER);
     if (vertexShader < 0) {
@@ -87,7 +87,7 @@ Result<unsigned int> Shader::loadFromRaw(const std::string& vertexShaderCode, co
 
     m_loaded = true;
 
-    return m_id;
+    return this;
 }
 
 void Shader::setUniform1f(const std::string &name, float value) const
