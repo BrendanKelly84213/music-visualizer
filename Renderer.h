@@ -21,7 +21,7 @@ public:
     void drawQuad(const glm::vec2& dimensions, const glm::vec2& position, const glm::vec4& color);
     void drawQuad(const glm::vec4 &color, const glm::mat4 &transform = glm::mat4(1.0f));
     bool drawShaderQuad(const std::string& shaderName, const glm::mat4& transform = glm::mat4(1.0f));
-    Result<Shader*> loadShader(const std::string& name, const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
+    Result<std::shared_ptr<Shader>> loadShader(const std::string& name, const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
     {
         m_shaders[name] = Shader::create();
         return m_shaders[name]->load(vertexShaderPath, fragmentShaderPath);

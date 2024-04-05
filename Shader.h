@@ -11,7 +11,7 @@
 #include <memory>
 #include "Error.h"
 
-class Shader {
+class Shader : public std::enable_shared_from_this<Shader> {
 public:
     static std::shared_ptr<Shader> create()
     {
@@ -22,8 +22,8 @@ public:
     void use() const;
     int compileShader(const std::string& source, unsigned int typeFlag);
     int linkProgram(unsigned int vertexShader, unsigned int fragmentShader);
-    Result<Shader *> load(const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
-    Result<Shader *> loadFromRaw(const std::string &vertexShaderCode, const std::string &fragmentShaderCode);
+    Result<std::shared_ptr<Shader>> load(const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
+    Result<std::shared_ptr<Shader>> loadFromRaw(const std::string &vertexShaderCode, const std::string &fragmentShaderCode);
 
     void setUniform1f(const std::string& name, float value) const;
     void setUniform2f(const std::string& name, float x, float y) const;

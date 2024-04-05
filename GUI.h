@@ -28,7 +28,7 @@ private:
     std::string m_compileMessage;
     std::string m_vertexShaderPath;
     std::string m_fragmentShaderPath;
-    Shader* m_shader;
+    std::shared_ptr<Shader> m_shader;
 };
 
 class GUI {
@@ -52,7 +52,7 @@ private:
     bool m_renderSpectrum;
     bool m_renderCustomShader;
     std::string m_currentShaderQuad;
-    // FIXME: We probably want to be able torender more than one shader at a time
+    // FIXME: We probably want to be able to render more than one shader at a time
     ShaderEditor m_shaderEditor;
 };
 
