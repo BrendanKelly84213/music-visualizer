@@ -70,7 +70,8 @@ void ShaderEditor::draw(const std::shared_ptr<Renderer>& renderer)
 
     ImGui::Text("number of uniforms: %zu", m_uniforms.size());
 
-    for (auto& uniform : m_uniforms) {
+    for (size_t i = 0; i < m_uniforms.size(); ++i) {
+        auto& uniform = m_uniforms[i];
         ImGui::Text("%s", std::string("uniform " + uniform.type + " " + uniform.name).c_str());
         char value[128] = "";
         memcpy(value, uniform.value.c_str(), uniform.value.size());
@@ -79,7 +80,7 @@ void ShaderEditor::draw(const std::shared_ptr<Renderer>& renderer)
         }
         ImGui::SameLine();
         if (ImGui::Button("Delete")) {
-            m_uniforms.pop_back();
+            m_uniforms.erase(m_uniforms.begin() + i);
             continue;
         }
         if (ImGui::BeginPopupModal("Edit Uniform Modal")) {
