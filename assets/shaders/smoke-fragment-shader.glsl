@@ -7,6 +7,7 @@ out vec4 FragColor;
 uniform vec2 u_resolution;
 uniform vec2 u_mouse;
 uniform float u_time;
+uniform float u_scale;
 
 float random (in vec2 _st) {
     return fract(sin(dot(_st.xy,
@@ -52,7 +53,7 @@ float fbm ( in vec2 _st) {
 
 void main() {
     vec2 st = gl_FragCoord.xy/u_resolution.xy*3.;
-    // st += st * abs(sin(u_time*0.1)*3.0);
+    st += st * u_scale;
     vec3 color = vec3(0.0);
 
     vec2 q = vec2(0.);

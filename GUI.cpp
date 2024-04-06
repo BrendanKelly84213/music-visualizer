@@ -101,7 +101,15 @@ void ShaderEditor::draw(const std::shared_ptr<Renderer>& renderer)
                 m_shader->setUniform1f(uniform.name, floatValue);
             } catch (std::invalid_argument const& exception) {
                 m_shader->setUniform1f(uniform.name, 0.0f);
-                ImGui::Text("invalid argument: %s", exception.what());
+                ImGui::Text("%s: invalid argument: %s", exception.what(), uniform.value.c_str());
+            }
+        } else if (uniform.type == "function") {
+            ImGui::InputTextWithHint(std::string("Function Name " + uniform.name).c_str(), "glfwGetTime()", value, IM_ARRAYSIZE(value));
+            if (m_shader == nullptr) {
+                continue;
+            }
+            if (std::string(value) == "glfwGetTime()") {
+                m_shader->setUniform1f(uniform.name, (float)glfwGetTime());
             }
         }
     }
