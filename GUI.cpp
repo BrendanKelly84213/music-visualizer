@@ -75,17 +75,19 @@ void ShaderEditor::draw(const std::shared_ptr<Renderer>& renderer)
         ImGui::Text("%s", std::string("uniform " + uniform.type + " " + uniform.name).c_str());
         char value[128] = "";
         memcpy(value, uniform.value.c_str(), uniform.value.size());
-        const auto editId = std::string("Edit Uniform Modal" + std::to_string(i));
-        const auto deleteId = std::string("Delete" + std::to_string(i));
-        if (ImGui::Button("Edit")) {
-            ImGui::OpenPopup(editId.c_str());
+        // FIXME: This method of maintaining button to modal ID relation is not pretty...
+        const auto editModalId = std::string("Edit Uniform Modal" + std::to_string(i));
+        const auto editButtonId = std::string("Edit" + std::to_string(i));
+        const auto deleteButtonId = std::string("Delete" + std::to_string(i));
+        if (ImGui::Button(editButtonId.c_str())) {
+            ImGui::OpenPopup(editModalId.c_str());
         }
         ImGui::SameLine();
-        if (ImGui::Button(deleteId.c_str())) {
+        if (ImGui::Button(deleteButtonId.c_str())) {
             m_uniforms.erase(m_uniforms.begin() + i);
             continue;
         }
-        if (ImGui::BeginPopupModal(editId.c_str())) {
+        if (ImGui::BeginPopupModal(editModalId.c_str())) {
             auto temp = m_uniformModal.draw();
             if (temp != nullptr) {
                 uniform = *temp;
