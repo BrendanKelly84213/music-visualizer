@@ -75,15 +75,17 @@ void ShaderEditor::draw(const std::shared_ptr<Renderer>& renderer)
         ImGui::Text("%s", std::string("uniform " + uniform.type + " " + uniform.name).c_str());
         char value[128] = "";
         memcpy(value, uniform.value.c_str(), uniform.value.size());
+        const auto editId = std::string("Edit Uniform Modal" + std::to_string(i));
+        const auto deleteId = std::string("Delete" + std::to_string(i));
         if (ImGui::Button("Edit")) {
-            ImGui::OpenPopup("Edit Uniform Modal");
+            ImGui::OpenPopup(editId.c_str());
         }
         ImGui::SameLine();
-        if (ImGui::Button("Delete")) {
+        if (ImGui::Button(deleteId.c_str())) {
             m_uniforms.erase(m_uniforms.begin() + i);
             continue;
         }
-        if (ImGui::BeginPopupModal("Edit Uniform Modal")) {
+        if (ImGui::BeginPopupModal(editId.c_str())) {
             auto temp = m_uniformModal.draw();
             if (temp != nullptr) {
                 uniform = *temp;
