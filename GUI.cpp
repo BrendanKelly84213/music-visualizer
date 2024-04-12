@@ -13,6 +13,7 @@
 
 void ShaderEditor::draw(const std::shared_ptr<Renderer>& renderer)
 {
+    // FIXME: Only ubuntu compatible at the moment
     auto openVertexShaderFile = [&]() {
         char filename[1024];
         FILE *f = popen(R"(zenity --file-selection  --file-filter=*.glsl)", "r");
@@ -73,8 +74,6 @@ void ShaderEditor::draw(const std::shared_ptr<Renderer>& renderer)
     for (size_t i = 0; i < m_uniforms.size(); ++i) {
         auto& uniform = m_uniforms[i];
         ImGui::Text("%s", std::string("uniform " + uniform.type + " " + uniform.name).c_str());
-        char value[128] = "";
-        memcpy(value, uniform.value.c_str(), uniform.value.size());
         // FIXME: This method of maintaining button to modal ID relation is not pretty...
         const auto editModalId = std::string("Edit Uniform Modal" + std::to_string(i));
         const auto editButtonId = std::string("Edit" + std::to_string(i));
@@ -94,26 +93,26 @@ void ShaderEditor::draw(const std::shared_ptr<Renderer>& renderer)
             }
             ImGui::EndPopup();
         }
+        // FIXME: uniform.type and uniform.inputMethod should be an enum or something similar and should be accessed by drop down menu
         if (uniform.type == "float") {
-            ImGui::InputText(std::string("Value " + uniform.name).c_str(), value, IM_ARRAYSIZE(value));
-            uniform.value = value;
-            if (m_shader == nullptr) {
-                continue;
-            }
-            try {
-                float floatValue = std::stof(uniform.value);
-                m_shader->setUniform1f(uniform.name, floatValue);
-            } catch (std::invalid_argument const& exception) {
-                m_shader->setUniform1f(uniform.name, 0.0f);
-                ImGui::Text("%s: invalid argument: %s", exception.what(), uniform.value.c_str());
-            }
-        } else if (uniform.type == "function") {
-            ImGui::InputTextWithHint(std::string("Function Name " + uniform.name).c_str(), "glfwGetTime()", value, IM_ARRAYSIZE(value));
-            if (m_shader == nullptr) {
-                continue;
-            }
-            if (std::string(value) == "glfwGetTime()") {
-                m_shader->setUniform1f(uniform.name, (float)glfwGetTime());
+            if (uniform.inputMethod == "manual") {
+                float value = std::get<float>(uniform.value);
+                ImGui::DragFloat(std::string("Value " + uniform.name).c_str(), &value);
+                uniform.value = value;
+                if (m_shader == nullptr) {
+                    continue;
+                }
+                m_shader->setUniform1f(uniform.name, value);
+            } else if (uniform.inputMethod == "function") {
+                static char value[128] = "";
+                ImGui::InputTextWithHint(std::string("Function Name " + uniform.name).c_str(), "glfwGetTime()", value, IM_ARRAYSIZE(value));
+                if (m_shader == nullptr) {
+                    continue;
+                }
+                if (std::string(value) == "glfwGetTime()") {
+                    uniform.value = (float)glfwGetTime();
+                    m_shader->setUniform1f(uniform.name, (float)glfwGetTime());
+                }
             }
         }
     }

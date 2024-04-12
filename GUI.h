@@ -16,7 +16,8 @@
 struct Uniform {
     std::string type;
     std::string name;
-    std::string value;
+    std::string inputMethod;
+    std::variant<float> value;
 };
 
 class ShaderEditor {
@@ -27,16 +28,16 @@ private:
     struct UniformModal {
         char uniformType[128] = "float";
         char uniformName[128] = "u_time";
-        char uniformValue[128] = "0.0f";
+        char uniformInputMethod[128] = "manual";
 
         std::shared_ptr<Uniform> draw()
         {
             ImGui::InputTextWithHint("Type", "example: for uniform float u_time -> float", uniformType, IM_ARRAYSIZE(uniformType));
             ImGui::InputTextWithHint("Name", "example: for uniform float u_time -> u_time", uniformName, IM_ARRAYSIZE(uniformName));
-            ImGui::InputTextWithHint("Value", "example: for uniform float u_time -> 0.0f", uniformValue, IM_ARRAYSIZE(uniformName));
+            ImGui::InputTextWithHint("Input Method", "example: For manual input: manual, for function: function", uniformInputMethod, IM_ARRAYSIZE(uniformInputMethod));
             if (ImGui::Button("Create")) {
                 ImGui::CloseCurrentPopup();
-                return std::make_shared<Uniform>(Uniform{uniformType, uniformName, uniformValue});
+                return std::make_shared<Uniform>(Uniform{uniformType, uniformName, uniformInputMethod, 0.0f});
             }
             if (ImGui::Button("Close")) {
                 ImGui::CloseCurrentPopup();
