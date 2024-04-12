@@ -7,6 +7,7 @@
 
 #include <string>
 #include <variant>
+#include <expected>
 
 #define TRY(expression, returnValue)                                        \
     ({                                                                      \
@@ -38,14 +39,14 @@ public:
     : m_error_or_value(std::move(value))
     {}
     Result(Error error)
-    : m_error_or_value(std::move(error))
+    : m_error_or_value(std::unexpected<Error>(std::move(error)))
     {}
 
-    [[nodiscard]] bool isError() const { return std::holds_alternative<Error>(m_error_or_value); }
-    T&& value() { return std::move(std::get<T>(m_error_or_value)); }
-    [[nodiscard]] Error error() const { return std::get<Error>(m_error_or_value); }
+    [[nodiscard]] bool isError() const { return !m_error_or_value.has_value(); }
+    T&& value() { return std::move(*m_error_or_value); }
+    [[nodiscard]] Error error() const { return m_error_or_value.error(); }
 private:
-    std::variant<Error, T> m_error_or_value {};
+    std::expected<T, Error> m_error_or_value {};
 };
 
 
