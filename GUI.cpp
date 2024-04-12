@@ -11,7 +11,7 @@
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_glfw.h"
 
-void ShaderEditor::draw(const std::shared_ptr<Renderer>& renderer)
+void ShaderEditor::draw(const std::shared_ptr<Renderer>& renderer, const std::shared_ptr<Music>& music)
 {
     // FIXME: Only ubuntu compatible at the moment
     auto openVertexShaderFile = [&]() {
@@ -114,7 +114,11 @@ void ShaderEditor::draw(const std::shared_ptr<Renderer>& renderer)
                 if (std::string(value) == "glfwGetTime()") {
                     uniform.value = (float)glfwGetTime();
                     m_shader->setUniform1f(uniform.name, (float)glfwGetTime());
+                } else if (std::string(value) == "fftAverage()") {
+                    uniform.value = (float)music->fftAverage();
+                    m_shader->setUniform1f(uniform.name, (float)music->fftAverage());
                 }
+                ImGui::Text("%f", std::get<float>(uniform.value));
             }
         }
     }
@@ -186,7 +190,7 @@ void GUI::mainMenu(const std::shared_ptr<Music> &music,
     }
 
     if (displayCustomShaderWindow) {
-        m_shaderEditor.draw(renderer);
+        m_shaderEditor.draw(renderer, music);
     }
 }
 

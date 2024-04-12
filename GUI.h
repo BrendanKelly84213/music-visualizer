@@ -23,7 +23,7 @@ struct Uniform {
 
 class ShaderEditor {
 public:
-    void draw(const std::shared_ptr<Renderer>& renderer);
+    void draw(const std::shared_ptr<Renderer>& renderer, const std::shared_ptr<Music>& music);
     [[nodiscard]] bool shouldRenderShader() const { return m_shouldRenderShader; }
 private:
     struct UniformModal {
