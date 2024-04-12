@@ -17,6 +17,7 @@ struct Uniform {
     std::string type;
     std::string name;
     std::string inputMethod;
+    std::string function;
     std::variant<float> value;
 };
 
@@ -37,7 +38,7 @@ private:
             ImGui::InputTextWithHint("Input Method", "example: For manual input: manual, for function: function", uniformInputMethod, IM_ARRAYSIZE(uniformInputMethod));
             if (ImGui::Button("Create")) {
                 ImGui::CloseCurrentPopup();
-                return std::make_shared<Uniform>(Uniform{uniformType, uniformName, uniformInputMethod, 0.0f});
+                return std::make_shared<Uniform>(Uniform{uniformType, uniformName, uniformInputMethod, "none",  0.0f});
             }
             if (ImGui::Button("Close")) {
                 ImGui::CloseCurrentPopup();

@@ -104,8 +104,10 @@ void ShaderEditor::draw(const std::shared_ptr<Renderer>& renderer)
                 }
                 m_shader->setUniform1f(uniform.name, value);
             } else if (uniform.inputMethod == "function") {
-                static char value[128] = "";
+                char value[128];
+                strcpy(value, uniform.function.c_str());
                 ImGui::InputTextWithHint(std::string("Function Name " + uniform.name).c_str(), "glfwGetTime()", value, IM_ARRAYSIZE(value));
+                uniform.function = value;
                 if (m_shader == nullptr) {
                     continue;
                 }
