@@ -11,6 +11,13 @@
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_glfw.h"
 
+void SpectrumEditor::draw(const std::shared_ptr<Renderer>& renderer, const std::shared_ptr<Music>& music)
+{
+    ImGui::Begin("Spectrum");
+    ImGui::End();
+}
+
+
 void ShaderEditor::draw(const std::shared_ptr<Renderer>& renderer, const std::shared_ptr<Music>& music)
 {
     // FIXME: Only ubuntu compatible at the moment
@@ -154,6 +161,8 @@ void GUI::mainMenu(const std::shared_ptr<Music> &music,
                    float frameRate)
 {
     static bool displayCustomShaderWindow = false;
+    static bool displaySpectrumEditor = false;
+
     auto openMusicFile = [&]() {
         char filename[1024];
         FILE *f = popen(R"(zenity --file-selection  --file-filter=*.wav)", "r");
@@ -179,6 +188,7 @@ void GUI::mainMenu(const std::shared_ptr<Music> &music,
         if (ImGui::BeginMenu("Visualization")) {
             if (ImGui::Selectable("Spectrum", m_renderSpectrum)) {
                 toggleRenderSpectrum();
+                displaySpectrumEditor = !displaySpectrumEditor;
             }
             if (ImGui::Selectable("Custom Shader", displayCustomShaderWindow)) {
                 displayCustomShaderWindow = !displayCustomShaderWindow;
@@ -187,6 +197,10 @@ void GUI::mainMenu(const std::shared_ptr<Music> &music,
         }
         ImGui::Text("Immediate Frame Rate: %.1f", frameRate);
         ImGui::EndMainMenuBar();
+    }
+
+    if (displaySpectrumEditor) {
+        m_spectrumEditor.draw(renderer, music);
     }
 
     if (displayCustomShaderWindow) {

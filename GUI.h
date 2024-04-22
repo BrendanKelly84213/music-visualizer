@@ -13,6 +13,12 @@
 #include "Renderer.h"
 #include "imgui.h"
 
+class SpectrumEditor {
+public:
+    void draw(const std::shared_ptr<Renderer> &renderer, const std::shared_ptr<Music> &music);
+private:
+};
+
 struct Uniform {
     std::string type;
     std::string name;
@@ -79,6 +85,7 @@ private:
     std::string m_currentShaderQuad;
     // FIXME: We probably want to be able to render more than one shader at a time
     ShaderEditor m_shaderEditor;
+    SpectrumEditor m_spectrumEditor;
 };
 
 
