@@ -17,7 +17,6 @@ void SpectrumEditor::draw(const std::shared_ptr<Renderer>& renderer, const std::
     ImGui::End();
 }
 
-
 void ShaderEditor::draw(const std::shared_ptr<Renderer>& renderer, const std::shared_ptr<Music>& music)
 {
     // FIXME: Only ubuntu compatible at the moment
@@ -224,3 +223,4 @@ void GUI::newFrame()
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 }
+

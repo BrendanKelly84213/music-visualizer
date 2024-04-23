@@ -64,7 +64,7 @@ private:
 
 class GUI {
 public:
-    GUI(const Window& window);
+    explicit GUI(const Window& window);
     ~GUI();
     void mainMenu(const std::shared_ptr<Music> &music,
                   const std::shared_ptr<Renderer> &renderer,
@@ -80,8 +80,8 @@ public:
     [[nodiscard]] bool shouldRenderCustomShader() const { return m_shaderEditor.shouldRenderShader(); }
     [[nodiscard]] const std::string& currentShaderQuad() const { return m_currentShaderQuad; }
 private:
-    bool m_renderSpectrum;
-    bool m_renderCustomShader;
+    bool m_renderSpectrum{};
+    bool m_renderCustomShader{};
     std::string m_currentShaderQuad;
     // FIXME: We probably want to be able to render more than one shader at a time
     ShaderEditor m_shaderEditor;

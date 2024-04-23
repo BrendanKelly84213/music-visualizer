@@ -1,4 +1,5 @@
 FFT and audio analysis needs reworking
+- Implement STFT
 
 Fix error handling system
 - How? What's wrong with it?
