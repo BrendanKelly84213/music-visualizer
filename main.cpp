@@ -25,7 +25,7 @@ float frameRate = 0;
 
 int main()
 {
-    Window window(800, 600, "Hello Window");
+    Window window(1024, 800, "Visualizer");
     if (!window.init()) {
         std::cout << "Failed to initialize window" << '\n';
         return 1;
