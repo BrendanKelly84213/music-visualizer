@@ -1,3 +1,15 @@
+GUI needs to be reworked
+- Leaning towards a node graph based system with presets
+-- ROADMAP
+-- 1. Wireframe how GUI will work 
+---- Need a way to add nodes in from a list
+----- Simplest way: Add node directly in main menu 
+----- Have presets available: Music, FFT, Average, Shader Editor, etc...
+----- Node structure: Should have a simple in, out, and some live editable properties  
+----- Nodes can basically just represent C++ classes?
+---- Eventually ability to create and edit nodes?
+-- 2. Build off wireframe 
+
 FFT and audio analysis needs reworking
 - Implement STFT
 
