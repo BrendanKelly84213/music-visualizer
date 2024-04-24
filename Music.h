@@ -36,9 +36,10 @@ private:
     double m_average {0.0};
 };
 
+// FIXME: I don't like that this is called music when it really can hold any kind of wav file
 class Music {
 public:
-    static Result<std::shared_ptr<Music>> create(size_t dataBlockSize);
+    static Result<std::shared_ptr<Music>> create(size_t dataBlockSize = 512);
     Music()
     : m_loaded(false), m_ptr(nullptr, &Mix_FreeMusic), m_fft(nullptr)
     {}
@@ -50,6 +51,9 @@ public:
 
     static bool playing() { return Mix_PlayingMusic(); }
     void play(int loops = -1) { Mix_PlayMusic(m_ptr.get(), loops); }
+    void resume() { Mix_ResumeMusic(); }
+    int paused() { return Mix_PausedMusic(); }
+    void pause() { Mix_PauseMusic(); }
     void setLoaded(bool loaded) { m_loaded = loaded; }
     void setSongPath(const std::string& songPath) { m_songPath = songPath; }
     [[nodiscard]] double fftMagnitudeAt(size_t i) const { return m_fft->magnitudeAt(i); }

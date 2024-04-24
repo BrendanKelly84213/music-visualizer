@@ -15,6 +15,51 @@
 
 namespace fs = std::filesystem;
 
+void WAV::draw()
+{
+    auto openMusicFile = [&]() {
+        char filename[1024];
+        FILE *f = popen(R"(zenity --file-selection  --file-filter=*.wav)", "r");
+        fgets(filename, 1024, f);
+        std::string filenameString = filename;
+        filenameString.erase(std::remove(filenameString.begin(), filenameString.end(), '\n'), filenameString.cend());
+        auto& songPath = m_music->songPath();
+        if (!songPath.empty() && songPath == filenameString) {
+            return;
+        }
+        m_music->setSongPath(filenameString);
+        m_music->setLoaded(false);
+    };
+
+    ImGui::Begin(m_name.c_str());
+    if (ImGui::Button("Select WAV File")) {
+        std::thread t(openMusicFile);
+        t.detach();
+    }
+    ImGui::Text("%s", m_music->songPath().c_str());
+    if (!m_music->loaded() && !m_music->songPath().empty()) {
+        if (!m_music->load()) {
+            ImGui::Text("Could not load wav file at: %s", m_music->songPath().c_str());
+        }
+    }
+    if (ImGui::Button("Play")) {
+        if (m_music->paused() && m_music->loaded()) {
+            m_music->resume();
+        }
+        if (!Music::playing() && m_music->loaded()) {
+            m_music->play();
+        }
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Pause")) {
+        if (Music::playing() && m_music->loaded()) {
+            m_music->pause();
+        }
+    }
+
+    ImGui::End();
+}
+
 void SpectrumEditor::draw(const std::shared_ptr<Renderer>& renderer, const std::shared_ptr<Music>& music)
 {
     ImGui::Begin("Spectrum");
@@ -153,6 +198,7 @@ GUI::GUI(const Window& window)
 
     // FIXME: HardCoding like this is no good...
     m_nodes["Test"] = std::make_shared<Time>();
+    m_nodes["WAV"] = WAV::create();
 }
 
 GUI::~GUI()
@@ -201,6 +247,15 @@ void GUI::mainMenu(const std::shared_ptr<Music> &music,
             }
             ImGui::EndMenu();
         }
+        if (ImGui::BeginMenu("Add Node")) {
+            if (ImGui::MenuItem("Time")) {
+                addNode("Time");
+            }
+            if (ImGui::MenuItem("WAV")) {
+                addNode("WAV");
+            }
+            ImGui::EndMenu();
+        }
         ImGui::Text("Immediate Frame Rate: %.1f", frameRate);
         ImGui::EndMainMenuBar();
     }
@@ -214,7 +269,7 @@ void GUI::mainMenu(const std::shared_ptr<Music> &music,
     }
 
     for (const auto& node : m_nodes) {
-        if (node.second->shouldBeDrawn()) {
+        if (node.second != nullptr && node.second->shouldBeDrawn()) {
             node.second->draw();
         }
     }

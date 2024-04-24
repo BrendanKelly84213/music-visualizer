@@ -27,7 +27,7 @@ public:
 
     }
 
-    virtual void draw() const
+    virtual void draw()
     {
         ImGui::Begin(m_name.c_str());
         ImGui::End();
@@ -47,12 +47,31 @@ public:
     {
     }
 
-    void draw() const override
+    void draw() override
     {
         ImGui::Begin(m_name.c_str());
         ImGui::Text("%f", glfwGetTime());
         ImGui::End();
     }
+};
+
+class WAV : public Node {
+public:
+    static std::shared_ptr<WAV> create()
+    {
+        auto instance = std::make_shared<WAV>();
+        instance->m_music = TRY(Music::create(), nullptr);
+        return instance;
+    }
+
+    WAV()
+    : Node("wav")
+    {
+    }
+
+    void draw() override;
+private:
+    std::shared_ptr<Music> m_music;
 };
 
 class SpectrumEditor {
