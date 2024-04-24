@@ -13,6 +13,48 @@
 #include "Renderer.h"
 #include "imgui.h"
 
+class Node {
+public:
+    Node()
+    : m_name("node"), m_shouldBeDrawn(false)
+    {
+
+    }
+
+    Node(const std::string& name)
+    : m_name(name), m_shouldBeDrawn(false)
+    {
+
+    }
+
+    virtual void draw() const
+    {
+        ImGui::Begin(m_name.c_str());
+        ImGui::End();
+    }
+
+    [[nodiscard]] bool shouldBeDrawn() const { return m_shouldBeDrawn; }
+    void setShouldBeDrawn(bool shouldBeDrawn) { m_shouldBeDrawn = shouldBeDrawn; }
+protected:
+    bool m_shouldBeDrawn;
+    std::string m_name;
+};
+
+class Time : public Node {
+public:
+    Time()
+    : Node("time")
+    {
+    }
+
+    void draw() const override
+    {
+        ImGui::Begin(m_name.c_str());
+        ImGui::Text("%f", glfwGetTime());
+        ImGui::End();
+    }
+};
+
 class SpectrumEditor {
 public:
     void draw(const std::shared_ptr<Renderer> &renderer, const std::shared_ptr<Music> &music);
@@ -80,13 +122,15 @@ public:
     [[nodiscard]] bool shouldRenderCustomShader() const { return m_shaderEditor.shouldRenderShader(); }
     [[nodiscard]] const std::string& currentShaderQuad() const { return m_currentShaderQuad; }
 private:
+    void addNode(const std::string& name);
+
     bool m_renderSpectrum{};
     bool m_renderCustomShader{};
     std::string m_currentShaderQuad;
     // FIXME: We probably want to be able to render more than one shader at a time
     ShaderEditor m_shaderEditor;
     SpectrumEditor m_spectrumEditor;
+    std::unordered_map<std::string, std::shared_ptr<Node>> m_nodes;
 };
-
 
 #endif //GUI_H

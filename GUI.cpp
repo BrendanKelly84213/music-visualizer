@@ -6,10 +6,14 @@
 #include <thread>
 #include <algorithm>
 #include <stdexcept>
+#include <filesystem>
 #include "GUI.h"
 #include "imgui.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_glfw.h"
+#include "config.h"
+
+namespace fs = std::filesystem;
 
 void SpectrumEditor::draw(const std::shared_ptr<Renderer>& renderer, const std::shared_ptr<Music>& music)
 {
@@ -146,6 +150,9 @@ GUI::GUI(const Window& window)
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window.ptr(), true);
     ImGui_ImplOpenGL3_Init();
+
+    // FIXME: HardCoding like this is no good...
+    m_nodes["Test"] = std::make_shared<Time>();
 }
 
 GUI::~GUI()
@@ -205,6 +212,12 @@ void GUI::mainMenu(const std::shared_ptr<Music> &music,
     if (displayCustomShaderWindow) {
         m_shaderEditor.draw(renderer, music);
     }
+
+    for (const auto& node : m_nodes) {
+        if (node.second->shouldBeDrawn()) {
+            node.second->draw();
+        }
+    }
 }
 
 void GUI::debug()
@@ -222,5 +235,10 @@ void GUI::newFrame()
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
+}
+
+void GUI::addNode(const std::string& name)
+{
+    m_nodes[name]->setShouldBeDrawn(true);
 }
 
