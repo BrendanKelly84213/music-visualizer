@@ -3,6 +3,5 @@
 int main()
 {
     Application application;
-    application.run(512);
-    return 0;
+    return application.run(512);
 }

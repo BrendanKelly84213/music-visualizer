@@ -80,6 +80,7 @@ int Application::run(unsigned int dataBlockSize)
         GUI::render();
         glfwSwapBuffers(window.ptr());
     }
+    return 0;
 }
 
 
