@@ -11,10 +11,9 @@ find_package(glfw3 3.3 REQUIRED)
 find_package(glm REQUIRED)
 find_package(SDL2 REQUIRED)
 # https://answers.ros.org/question/253311/how-to-add-sdl2-library-in-cmake/
-find_package(PkgConfig)
+find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL2mixer REQUIRED SDL2_mixer)
 # https://stackoverflow.com/questions/44277114/how-to-use-fftw-library-in-cmake
-find_package(PkgConfig REQUIRED)
 pkg_search_module(FFTW REQUIRED fftw3 IMPORTED_TARGET)
 
 link_directories("${PROJECT_SOURCE_DIR}/external/glad/src")
