@@ -36,7 +36,6 @@ private:
     double m_average {0.0};
 };
 
-// FIXME: I don't like that this is called music when it really can hold any kind of wav file
 class Music {
 public:
     static Result<std::shared_ptr<Music>> create(size_t dataBlockSize = 512);

@@ -129,7 +129,7 @@ void ShaderEditor::draw(const std::shared_ptr<Renderer>& renderer, const std::sh
     for (size_t i = 0; i < m_uniforms.size(); ++i) {
         auto& uniform = m_uniforms[i];
         ImGui::Text("%s", std::string("uniform " + uniform.type + " " + uniform.name).c_str());
-        // FIXME: This method of maintaining button to modal ID relation is not pretty...
+        // FIXME: This method of maintaining button to modal ID relation is not pretty, and kind of doesn't work
         const auto editModalId = std::string("Edit Uniform Modal" + std::to_string(i));
         const auto editButtonId = std::string("Edit" + std::to_string(i));
         const auto deleteButtonId = std::string("Delete" + std::to_string(i));

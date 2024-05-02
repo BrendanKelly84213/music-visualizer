@@ -45,7 +45,6 @@ private:
     static float s_quadVertices[12];
     static unsigned int s_quadIndices[6];
 
-    // FIXME: Temporary!
     static std::string s_quadVertexShaderSrc;
     static std::string s_quadFragmentShaderSrc;
 };
