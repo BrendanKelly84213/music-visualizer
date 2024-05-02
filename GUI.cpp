@@ -197,7 +197,7 @@ GUI::GUI(const Window& window)
     ImGui_ImplOpenGL3_Init();
 
     // FIXME: HardCoding like this is no good...
-    m_nodes["Test"] = std::make_shared<Time>();
+    m_nodes["Time"] = std::make_shared<Time>();
     m_nodes["WAV"] = WAV::create();
 }
 
@@ -296,4 +296,3 @@ void GUI::addNode(const std::string& name)
 {
     m_nodes[name]->setShouldBeDrawn(true);
 }
-
