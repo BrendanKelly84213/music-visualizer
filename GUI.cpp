@@ -181,8 +181,9 @@ void ShaderEditor::draw(const std::shared_ptr<Renderer>& renderer, const std::sh
     ImGui::End();
 }
 
-GUI::GUI(const Window& window)
-: m_renderSpectrum(false)
+
+
+void GUI::init(const Window &window)
 {
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -199,6 +200,7 @@ GUI::GUI(const Window& window)
     // FIXME: HardCoding like this is no good...
     m_nodes["Time"] = std::make_shared<Time>();
     m_nodes["WAV"] = WAV::create();
+
 }
 
 GUI::~GUI()
@@ -296,3 +298,4 @@ void GUI::addNode(const std::string& name)
 {
     m_nodes[name]->setShouldBeDrawn(true);
 }
+

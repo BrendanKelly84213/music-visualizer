@@ -125,8 +125,12 @@ private:
 
 class GUI {
 public:
-    explicit GUI(const Window& window);
+    GUI()
+        : m_renderSpectrum(false)
+    {
+    }
     ~GUI();
+    void init(const Window& window);
     void mainMenu(const std::shared_ptr<Music> &music,
                   const std::shared_ptr<Renderer> &renderer,
                   float frameRate);

@@ -28,8 +28,20 @@
 
 class Application {
 public:
-    int run(unsigned int dataBlockSize);
+    Application()
+    : m_window(1024, 800, "Visualizer")
+    {
+    }
+
+    bool init();
+
+    int run();
 private:
+    Window m_window;
+    GUI m_gui;
+    std::shared_ptr<Music> m_music;
+    std::shared_ptr<Renderer> m_renderer;
+
 };
 
 

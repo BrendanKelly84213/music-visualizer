@@ -3,5 +3,7 @@
 int main()
 {
     Application application;
-    return application.run(512);
+    if (!application.init())
+        return 1;
+    return application.run();
 }
