@@ -60,12 +60,6 @@ void WAV::draw()
     ImGui::End();
 }
 
-void SpectrumEditor::draw(const std::shared_ptr<Renderer>& renderer, const std::shared_ptr<Music>& music)
-{
-    ImGui::Begin("Spectrum");
-    ImGui::End();
-}
-
 void ShaderEditor::draw(const std::shared_ptr<Renderer>& renderer, const std::shared_ptr<Music>& music)
 {
     // FIXME: Only ubuntu compatible at the moment
@@ -181,8 +175,6 @@ void ShaderEditor::draw(const std::shared_ptr<Renderer>& renderer, const std::sh
     ImGui::End();
 }
 
-
-
 void GUI::init(const Window &window)
 {
     // Setup Dear ImGui context
@@ -200,7 +192,6 @@ void GUI::init(const Window &window)
     // FIXME: HardCoding like this is no good...
     m_nodes["Time"] = std::make_shared<Time>();
     m_nodes["WAV"] = WAV::create();
-
 }
 
 GUI::~GUI()
@@ -210,45 +201,11 @@ GUI::~GUI()
     ImGui::DestroyContext();
 }
 
-void GUI::mainMenu(const std::shared_ptr<Music> &music,
-                   const std::shared_ptr<Renderer> &renderer,
-                   float frameRate)
+void GUI::mainMenu()
 {
-    static bool displayCustomShaderWindow = false;
-    static bool displaySpectrumEditor = false;
-
-    auto openMusicFile = [&]() {
-        char filename[1024];
-        FILE *f = popen(R"(zenity --file-selection  --file-filter=*.wav)", "r");
-        fgets(filename, 1024, f);
-        std::string filenameString = filename;
-        filenameString.erase(std::remove(filenameString.begin(), filenameString.end(), '\n'), filenameString.cend());
-        auto& songPath = music->songPath();
-        if (!songPath.empty() && songPath == filenameString) {
-            return;
-        }
-        music->setSongPath(filenameString);
-        music->setLoaded(false);
-    };
+    auto& io = ImGui::GetIO();
 
     if (ImGui::BeginMainMenuBar()) {
-        if (ImGui::BeginMenu("File")) {
-            if (ImGui::MenuItem("Open")) {
-                std::thread t(openMusicFile);
-                t.detach();
-            }
-            ImGui::EndMenu();
-        }
-        if (ImGui::BeginMenu("Visualization")) {
-            if (ImGui::Selectable("Spectrum", m_renderSpectrum)) {
-                toggleRenderSpectrum();
-                displaySpectrumEditor = !displaySpectrumEditor;
-            }
-            if (ImGui::Selectable("Custom Shader", displayCustomShaderWindow)) {
-                displayCustomShaderWindow = !displayCustomShaderWindow;
-            }
-            ImGui::EndMenu();
-        }
         if (ImGui::BeginMenu("Add Node")) {
             if (ImGui::MenuItem("Time")) {
                 addNode("Time");
@@ -258,16 +215,8 @@ void GUI::mainMenu(const std::shared_ptr<Music> &music,
             }
             ImGui::EndMenu();
         }
-        ImGui::Text("Immediate Frame Rate: %.1f", frameRate);
+        ImGui::Text("Frame Rate: %.1f", io.Framerate);
         ImGui::EndMainMenuBar();
-    }
-
-    if (displaySpectrumEditor) {
-        m_spectrumEditor.draw(renderer, music);
-    }
-
-    if (displayCustomShaderWindow) {
-        m_shaderEditor.draw(renderer, music);
     }
 
     for (const auto& node : m_nodes) {

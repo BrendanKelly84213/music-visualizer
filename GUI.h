@@ -74,12 +74,6 @@ private:
     std::shared_ptr<Music> m_music;
 };
 
-class SpectrumEditor {
-public:
-    void draw(const std::shared_ptr<Renderer> &renderer, const std::shared_ptr<Music> &music);
-private:
-};
-
 struct Uniform {
     std::string type;
     std::string name;
@@ -91,7 +85,6 @@ struct Uniform {
 class ShaderEditor {
 public:
     void draw(const std::shared_ptr<Renderer>& renderer, const std::shared_ptr<Music>& music);
-    [[nodiscard]] bool shouldRenderShader() const { return m_shouldRenderShader; }
 private:
     struct UniformModal {
         char uniformType[128] = "float";
@@ -125,34 +118,18 @@ private:
 
 class GUI {
 public:
-    GUI()
-        : m_renderSpectrum(false)
-    {
-    }
     ~GUI();
     void init(const Window& window);
-    void mainMenu(const std::shared_ptr<Music> &music,
-                  const std::shared_ptr<Renderer> &renderer,
-                  float frameRate);
+    void mainMenu();
     void debug();
     static void render();
     static void newFrame();
-    // FIXME: Temporary! We should be able  to access a variable number of different visuals in the future. So hardcoding presets like this won't work!
-    void toggleRenderSpectrum() { m_renderSpectrum = !m_renderSpectrum; }
-    void toggleCustomShader() { m_renderCustomShader = !m_renderCustomShader; }
-    void setCurrentShaderQuad(const std::string& name) { m_currentShaderQuad = name; }
-    [[nodiscard]] bool renderSpectrum() const { return m_renderSpectrum; }
-    [[nodiscard]] bool shouldRenderCustomShader() const { return m_shaderEditor.shouldRenderShader(); }
-    [[nodiscard]] const std::string& currentShaderQuad() const { return m_currentShaderQuad; }
 private:
     void addNode(const std::string& name);
 
-    bool m_renderSpectrum{};
-    bool m_renderCustomShader{};
     std::string m_currentShaderQuad;
     // FIXME: We probably want to be able to render more than one shader at a time
     ShaderEditor m_shaderEditor;
-    SpectrumEditor m_spectrumEditor;
     std::unordered_map<std::string, std::shared_ptr<Node>> m_nodes;
 };
 
