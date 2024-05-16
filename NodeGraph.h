@@ -5,7 +5,6 @@
 #ifndef NODEGRAPH_H
 #define NODEGRAPH_H
 
-
 class NodeGraph {
 
 };

@@ -2,16 +2,15 @@
 // Created by brendan on 3/21/24.
 //
 
-#include <memory>
 #include <thread>
 #include <algorithm>
 #include <stdexcept>
 #include <filesystem>
 #include "GUI.h"
 #include "imgui.h"
+#include "imnodes.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_glfw.h"
-#include "config.h"
 
 namespace fs = std::filesystem;
 
@@ -189,6 +188,9 @@ void GUI::init(const Window &window)
     ImGui_ImplGlfw_InitForOpenGL(window.ptr(), true);
     ImGui_ImplOpenGL3_Init();
 
+    ImGui::CreateContext();
+    ImNodes::CreateContext();
+
     // FIXME: HardCoding like this is no good...
     m_nodes["Time"] = std::make_shared<Time>();
     m_nodes["WAV"] = WAV::create();
@@ -199,6 +201,7 @@ GUI::~GUI()
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
+    ImNodes::DestroyContext();
 }
 
 void GUI::mainMenu()
@@ -241,10 +244,40 @@ void GUI::newFrame()
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
+
+    onFrame();
+}
+
+void GUI::onFrame()
+{
+    const int hardcoded_node_id = 1;
+
+    ImGui::Begin("node editor");
+    ImNodes::BeginNodeEditor();
+
+    ImNodes::BeginNode(hardcoded_node_id);
+
+    const int output_attr_id = 2;
+    ImNodes::BeginOutputAttribute(output_attr_id);
+// in between Begin|EndAttribute calls, you can call ImGui
+// UI functions
+    ImGui::Text("output pin");
+    ImNodes::EndOutputAttribute();
+
+    ImNodes::EndNode();
+
+    ImNodes::EndNodeEditor();
+
+    ImGui::End();
+
+
+
 }
 
 void GUI::addNode(const std::string& name)
 {
     m_nodes[name]->setShouldBeDrawn(true);
 }
+
+
 

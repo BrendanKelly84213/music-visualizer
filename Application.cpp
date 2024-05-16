@@ -39,8 +39,7 @@ void Application::getInputs()
 
 void Application::render()
 {
-    GUI::newFrame();
-    m_gui.mainMenu();
+    m_gui.newFrame();
 
     RenderCommand::setClearColor({0.0,0.0,0.1, 1.0});
     RenderCommand::clear();

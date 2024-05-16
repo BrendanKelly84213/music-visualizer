@@ -24,13 +24,10 @@ public:
     Node(const std::string& name)
     : m_name(name), m_shouldBeDrawn(false)
     {
-
     }
 
     virtual void draw()
     {
-        ImGui::Begin(m_name.c_str());
-        ImGui::End();
     }
 
     [[nodiscard]] bool shouldBeDrawn() const { return m_shouldBeDrawn; }
@@ -123,7 +120,8 @@ public:
     void mainMenu();
     void debug();
     static void render();
-    static void newFrame();
+    void newFrame();
+    void onFrame();
 private:
     void addNode(const std::string& name);
 
