@@ -71,6 +71,8 @@ add_executable(music-visualizer main.cpp
         config.h
         Application.cpp
         Application.h
+        NodeGraph.cpp
+        NodeGraph.h
 )
 
 target_link_libraries(music-visualizer glfw ${OpenGlLinkers} ${SDL_Linkers} ${LibSndFileLinkers} ${fftwLinkers})

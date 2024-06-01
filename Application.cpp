@@ -47,7 +47,3 @@ void Application::render()
     GUI::render();
     glfwSwapBuffers(m_window.ptr());
 }
-
-
-
-
