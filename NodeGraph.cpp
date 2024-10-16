@@ -2,6 +2,7 @@
 // Created by brendan on 5/4/24.
 //
 
+#include <algorithm>
 #include "NodeGraph.h"
 NodeGraph::NodeGraph()
 {
@@ -103,7 +104,33 @@ void NodeGraph::onFrame()
         ImNodes::EndNode();
     }
 
+    for (auto const& link : m_links) {
+        ImNodes::Link(link.id, link.startAttribute.id, link.endAttribute.id);
+    }
+    
     ImNodes::EndNodeEditor();
+
+    {
+        Link link{};
+        if (ImNodes::IsLinkCreated(&link.startAttribute.id, &link.endAttribute.id))
+        {
+            link.id = ++m_currentId;
+            m_links.push_back(link);
+        }
+    }
+
+    {
+        int link_id;
+        if (ImNodes::IsLinkDestroyed(&link_id))
+        {
+            auto iter = std::find_if(m_links.begin(), m_links.end(), [link_id](const Link& link) -> bool {
+                    return link.id == link_id;
+                });
+            assert(iter != m_links.end());
+            m_links.erase(iter);
+        }
+    }
+
     ImGui::End();
 }
 
