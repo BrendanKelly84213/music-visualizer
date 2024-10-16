@@ -40,7 +40,17 @@ Node NodeLibrary[] = {
             {.name = "out"},
         }
     },
-
+{
+        .name = "Output",
+        .inAttributes = {
+            {.name = "in1"},
+            {.name = "in2"}
+        },
+        .staticAttributes = {
+        },
+        .outAttributes = {
+        }
+    },
 };
 
 void NodeGraph::onFrame()
@@ -107,9 +117,10 @@ void NodeGraph::onFrame()
     for (auto const& link : m_links) {
         ImNodes::Link(link.id, link.startAttribute.id, link.endAttribute.id);
     }
-    
+
     ImNodes::EndNodeEditor();
 
+    // Create links
     {
         Link link{};
         if (ImNodes::IsLinkCreated(&link.startAttribute.id, &link.endAttribute.id))
@@ -119,6 +130,7 @@ void NodeGraph::onFrame()
         }
     }
 
+    // Handle any destroyed links
     {
         int link_id;
         if (ImNodes::IsLinkDestroyed(&link_id))
@@ -130,7 +142,11 @@ void NodeGraph::onFrame()
             m_links.erase(iter);
         }
     }
+    ImGui::End();
 
+    // Output window
+    ImGui::Begin("output window");
+    ImGui::TextUnformatted("Hello!");
     ImGui::End();
 }
 
