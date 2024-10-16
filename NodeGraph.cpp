@@ -41,6 +41,16 @@ Node NodeLibrary[] = {
         }
     },
 {
+        .name = "sin",
+        .inAttributes = {
+            {.name = "in"}
+        },
+        .staticAttributes = {
+        },
+        .outAttributes = {
+        },
+    },
+{
         .name = "Output",
         .inAttributes = {
             {.name = "in1"},
@@ -142,11 +152,6 @@ void NodeGraph::onFrame()
             m_links.erase(iter);
         }
     }
-    ImGui::End();
-
-    // Output window
-    ImGui::Begin("output window");
-    ImGui::TextUnformatted("Hello!");
     ImGui::End();
 }
 

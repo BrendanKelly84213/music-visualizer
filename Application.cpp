@@ -16,7 +16,13 @@ bool Application::init()
         return false;
     }
 
-    m_gui.init(m_window);
+    m_framebuffer = FrameBuffer::create();
+    m_renderer = Renderer::create();
+    if (m_renderer == nullptr) {
+        std::cout << "Renderer is null\n";
+        return false;
+    }
+    m_gui.init(m_window, m_framebuffer);
     return true;
 }
 
@@ -40,10 +46,18 @@ void Application::getInputs()
 void Application::render()
 {
     m_gui.newFrame();
+    m_framebuffer->bind();
 
     RenderCommand::setClearColor({0.0,0.0,0.1, 1.0});
     RenderCommand::clear();
 
+    m_renderer->drawQuad({0.5, 0.5}, {0, 0}, glm::vec4{0.5,0,0, 1.0});
+    RenderCommand::drawIndexed(6);
+    m_framebuffer->unbind();
+
+    RenderCommand::setClearColor({0.0,0.0,0.0, 1.0});
+    RenderCommand::clear();
     GUI::render();
+
     glfwSwapBuffers(m_window.ptr());
 }

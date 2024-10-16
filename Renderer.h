@@ -17,7 +17,7 @@
 
 class Renderer {
 public:
-    static std::shared_ptr<Renderer> create();
+    static std::unique_ptr<Renderer> create();
     void drawQuad(const glm::vec2& dimensions, const glm::vec2& position, const glm::vec4& color);
     void drawQuad(const glm::vec4 &color, const glm::mat4 &transform = glm::mat4(1.0f));
     bool drawShaderQuad(const std::string& shaderName, const glm::mat4& transform = glm::mat4(1.0f));

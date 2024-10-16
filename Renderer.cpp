@@ -48,9 +48,9 @@ unsigned int Renderer::s_quadIndices[6] = {
     1, 2, 3    // second triangle
 };
 
-std::shared_ptr<Renderer> Renderer::create()
+std::unique_ptr<Renderer> Renderer::create()
 {
-    auto renderer = std::make_shared<Renderer>(Renderer());
+    auto renderer = std::make_unique<Renderer>(Renderer());
     auto defaultShader = Shader::create();
     auto result = defaultShader->loadFromRaw(s_quadVertexShaderSrc, s_quadFragmentShaderSrc);
     if (result.isError()) {

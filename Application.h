@@ -24,6 +24,7 @@
 #include "imgui.h"
 #include "PerlinNoise.h"
 #include "config.h"
+#include "FrameBuffer.h"
 
 
 class Application {
@@ -41,6 +42,8 @@ private:
 
     Window m_window;
     GUI m_gui;
+    std::shared_ptr<FrameBuffer> m_framebuffer;
+    std::unique_ptr<Renderer> m_renderer;
 };
 
 

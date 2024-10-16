@@ -14,7 +14,7 @@
 
 namespace fs = std::filesystem;
 
-void GUI::init(const Window &window)
+void GUI::init(const Window &window, std::shared_ptr<FrameBuffer> const& framebuffer)
 {
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -30,6 +30,8 @@ void GUI::init(const Window &window)
     ImGui_ImplOpenGL3_Init();
 
     ImGui::CreateContext();
+
+    m_framebuffer = framebuffer;
 }
 
 GUI::~GUI()
@@ -61,5 +63,15 @@ void GUI::newFrame()
 
 void GUI::onFrame()
 {
-   m_nodeGraph.onFrame();
+    m_nodeGraph.onFrame();
+
+    // Output window
+    ImGui::Begin("output window");
+    {
+        auto size = ImGui::GetContentRegionAvail();
+        unsigned int colorBufferId = m_framebuffer->textureColorBuffer();
+        m_framebuffer->rescale((int)size.x, (int)size.y);
+        ImGui::Image((ImTextureID)colorBufferId, size);
+        ImGui::End();
+    }
 }
