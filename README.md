@@ -2,6 +2,13 @@
 
 Only tested on Ubuntu 22! 
 
+## Install submodules
+
+```
+git submodule init
+git submodule update
+```
+
 ## Install dependencies 
 
 ```
