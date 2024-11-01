@@ -8,12 +8,12 @@
 
 #include <memory>
 
-#include "Music.h"
-#include "Window.h"
-#include "Renderer.h"
-#include "imgui.h"
-#include "NodeGraph.h"
 #include "FrameBuffer.h"
+#include "Music.h"
+#include "NodeEditor.h"
+#include "Renderer.h"
+#include "Window.h"
+#include "imgui.h"
 
 class GUI {
 public:
@@ -24,7 +24,7 @@ public:
     void newFrame();
     void onFrame();
 private:
-    NodeGraph m_nodeGraph;
+    NodeEditor m_nodeGraph;
     std::shared_ptr<FrameBuffer> m_framebuffer;
 };
 
