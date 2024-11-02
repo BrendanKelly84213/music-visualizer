@@ -9,12 +9,8 @@
 #include "imnodes.h"
 #include "Graph.h"
 
-struct Attribute {
-    int id;
-    const char* name;
-};
-
 enum NodeType {
+    Value,
     Time,
     Add,
     Sin,
@@ -22,8 +18,8 @@ enum NodeType {
 };
 
 struct Node {
-    int id;
     NodeType type;
+    float value {};
 };
 
 class NodeEditor {
@@ -32,7 +28,19 @@ public:
     ~NodeEditor();
     void onFrame();
 private:
+    struct UiNode {
+        int id;
+        union {
+            struct {
+                int lhs, rhs;
+            } add;
+            struct {
+                int output;
+            } time;
+        } type;
+    };
     Graph<Node> m_graph;
+    std::vector<UiNode> m_nodes;
 };
 
 

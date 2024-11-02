@@ -17,11 +17,26 @@ public:
         int to;
     };
 
+    int insert_node(NodeType const& node)
+    {
+        int id = m_current_id++;
+        m_nodes.insert(std::make_pair(id, node));
+        return id;
+    }
+
+    int insert_edge(int from_id, int to_id)
+    {
+        int id = m_current_id++;
+        m_edges.insert(std::make_pair(id, Edge{.id = id, .from = from_id, .to = to_id}));
+        return id;
+    }
+
 private:
-    int m_current_id;
+    int m_current_id {0};
 
     std::unordered_map<int, NodeType> m_nodes;
     std::unordered_map<int, Edge> m_edges;
 };
+
 
 #endif // GRAPH_H
