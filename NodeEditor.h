@@ -30,6 +30,7 @@ public:
 private:
     struct UiNode {
         int id;
+        NodeType type;
         union {
             struct {
                 int lhs, rhs;
@@ -37,8 +38,12 @@ private:
             struct {
                 int output;
             } time;
-        } type;
+            struct {
+                int input;
+            } output;
+        } ui;
     };
+
     Graph<Node> m_graph;
     std::vector<UiNode> m_nodes;
 };
