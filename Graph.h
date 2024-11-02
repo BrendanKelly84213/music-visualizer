@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <unordered_map>
+#include <cassert>
 
 template <typename NodeType>
 class Graph {
@@ -31,12 +32,24 @@ public:
         return id;
     }
 
+    NodeType& node(int id)
+    {
+        auto it = m_nodes.find(id);
+        assert(it != m_nodes.end());
+        return it->second;
+    }
+
+    std::unordered_map<int, Edge> const& edges()
+    {
+        return m_edges;
+    }
+
+
 private:
     int m_current_id {0};
 
     std::unordered_map<int, NodeType> m_nodes;
     std::unordered_map<int, Edge> m_edges;
 };
-
 
 #endif // GRAPH_H
