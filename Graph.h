@@ -44,6 +44,7 @@ public:
         return m_edges;
     }
 
+    void dfs_traverse();
 
 private:
     int m_current_id {0};

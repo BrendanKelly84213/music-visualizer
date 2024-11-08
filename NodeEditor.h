@@ -27,6 +27,8 @@ public:
     NodeEditor();
     ~NodeEditor();
     void onFrame();
+
+    ImU32 output() const { return m_output; }
 private:
     struct UiNode {
         int id;
@@ -44,8 +46,10 @@ private:
         } ui;
     };
 
-    Graph<Node> m_graph;
-    std::vector<UiNode> m_nodes;
+    int m_root_node_id;
+    ImU32 m_output {};
+    Graph<Node> m_graph {};
+    std::vector<UiNode> m_nodes {};
 };
 
 

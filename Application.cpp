@@ -51,7 +51,9 @@ void Application::render()
     RenderCommand::setClearColor({0.0,0.0,0.1, 1.0});
     RenderCommand::clear();
 
-    m_renderer->drawQuad({0.5, 0.5}, {0, 0}, glm::vec4{0.5,0,0, 1.0});
+    // FIXME: Temporary debugging thing. In the future outputs can should represent anything graphical...
+    auto color = m_gui.nodeEditor().output();
+    m_renderer->drawQuad({0.5, 0.5}, {0, 0}, glm::vec4{color & 0x000000FF,color & 0x0000FF00,color & 0x00FF0000, color & IM_COL32_A_MASK});
     RenderCommand::drawIndexed(6);
     m_framebuffer->unbind();
 

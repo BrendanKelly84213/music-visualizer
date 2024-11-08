@@ -3,7 +3,7 @@
 //
 
 #include "NodeEditor.h"
-NodeEditor::NodeEditor()
+NodeEditor::NodeEditor() : m_root_node_id(-1)
 {
     ImNodes::CreateContext();
 }
@@ -13,10 +13,19 @@ NodeEditor::~NodeEditor()
     ImNodes::DestroyContext();
 }
 
+static ImU32 evaluate(Graph<Node>& graph, int root)
+{
+
+}
+
 void NodeEditor::onFrame()
 {
     ImGui::Begin("node editor");
     ImNodes::BeginNodeEditor();
+
+    if (!ImGui::IsAnyItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
+        ImGui::OpenPopup("nodes");
+    }
 
     if (ImGui::BeginPopup("nodes")) {
         ImVec2 const click_pos = ImGui::GetMousePosOnOpeningCurrentPopup();
@@ -55,10 +64,6 @@ void NodeEditor::onFrame()
         ImGui::EndPopup();
     }
 
-    if (ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
-        ImGui::OpenPopup("nodes");
-    }
-
     for (auto const& node : m_nodes) {
         switch (node.type) {
         case Add:
@@ -92,8 +97,11 @@ void NodeEditor::onFrame()
         }
     }
 
+
+    // Create links
     for (auto const& edge_pair : m_graph.edges()) {
         auto const& edge = edge_pair.second;
+        // We don't want to link internal nodes
         if (m_graph.node(edge.from).type != NodeType::Value) {
             continue;
         }
@@ -118,4 +126,8 @@ void NodeEditor::onFrame()
     }
 
     ImGui::End();
+
+    // Evaluate the graph
+    m_output = m_root_node_id != -1 ? evaluate(m_graph, m_root_node_id) : 0;
 }
+
