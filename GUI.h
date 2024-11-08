@@ -23,8 +23,10 @@ public:
     static void render();
     void newFrame();
     void onFrame();
+
+    NodeEditor const& nodeEditor() const { return m_nodeEditor; }
 private:
-    NodeEditor m_nodeGraph;
+    NodeEditor m_nodeEditor;
     std::shared_ptr<FrameBuffer> m_framebuffer;
 };
 

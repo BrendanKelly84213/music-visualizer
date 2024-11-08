@@ -63,7 +63,7 @@ void GUI::newFrame()
 
 void GUI::onFrame()
 {
-    m_nodeGraph.onFrame();
+    m_nodeEditor.onFrame();
 
     // Output window
     ImGui::Begin("output window");
