@@ -3,6 +3,7 @@
 //
 
 #include "NodeEditor.h"
+#include <iostream>
 NodeEditor::NodeEditor() : m_root_node_id(-1)
 {
     ImNodes::CreateContext();
@@ -15,7 +16,13 @@ NodeEditor::~NodeEditor()
 
 static ImU32 evaluate(Graph<Node>& graph, int root)
 {
+    std::vector<int> path;
+    graph.dfs_traverse(root, path);
 
+    for (auto node : path) {
+        ImGui::Text("%d", node);
+    }
+    return 0;
 }
 
 void NodeEditor::onFrame()
@@ -60,6 +67,7 @@ void NodeEditor::onFrame()
 
             m_nodes.push_back(node);
             ImNodes::SetNodeScreenSpacePos(node.id, click_pos);
+            m_root_node_id = node.id;
         }
         ImGui::EndPopup();
     }
