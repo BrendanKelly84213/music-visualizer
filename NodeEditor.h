@@ -38,11 +38,11 @@ private:
                 int lhs, rhs;
             } add;
             struct {
-                int output;
-            } time;
-            struct {
                 int input;
             } output;
+            struct {
+                int input;
+            } sin;
         } ui;
     };
 

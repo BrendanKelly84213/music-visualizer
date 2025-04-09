@@ -37,7 +37,7 @@ public:
         return id;
     }
 
-    NodeType& node(int id)
+    const NodeType& node(int id) const
     {
         auto it = m_nodes.find(id);
         assert(it != m_nodes.end());
@@ -49,7 +49,7 @@ public:
         return m_edges;
     }
 
-    std::vector<int> neighbors(int id)
+    std::vector<int> neighbors(int id) const
     {
         auto it = m_node_neighbours.find(id);
         if (it != m_node_neighbours.end()) {
@@ -58,28 +58,41 @@ public:
         return {};
     }
 
-    void dfs_traverse(int node_id, std::vector<int>& path)
+    int num_edges_from_node(int id) const
     {
-        std::stack<std::pair<int, bool>> stack;
-        stack.emplace(node_id, false);
-        while (!stack.empty()) {
-            std::pair<int, bool> vertex = stack.top();
-            stack.pop();
-            if (!vertex.second) {
-                vertex.second = true;
-                path.push_back(vertex.first);
-                auto const& adjacent = neighbors(vertex.first);
-                for (auto const& neighbor : adjacent) {
-                    stack.push({neighbor, false});
-                }
-            }
+        auto it = m_node_neighbours.find(id);
+        if (it != m_node_neighbours.end()) {
+            return static_cast<int>(it->second.size());
         }
+        return 0;
     }
+
 private:
     int m_current_id {0};
     std::unordered_map<int, NodeType> m_nodes {};
     std::unordered_map<int, Edge> m_edges {};
     std::unordered_map<int, std::vector<int>> m_node_neighbours {};
 };
+
+template<typename NodeType, typename Visitor>
+void dfs_traverse(const Graph<NodeType> graph, const int start_node, Visitor visitor)
+{
+    std::stack<int> stack;
+
+    stack.push(start_node);
+
+    while (!stack.empty())
+    {
+        const int current_node = stack.top();
+        stack.pop();
+
+        visitor(current_node);
+
+        for (const int neighbor : graph.neighbors(current_node))
+        {
+            stack.push(neighbor);
+        }
+    }
+}
 
 #endif // GRAPH_H
