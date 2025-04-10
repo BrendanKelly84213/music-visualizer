@@ -67,7 +67,7 @@ static ImU32 evaluate(const Graph<Node>& graph, int root)
         case NodeType::Sin: {
             const float x = value_stack.top();
             value_stack.pop();
-            const float res = std::sin(x);
+            const float res = std::abs(std::sin(x));
             value_stack.push(res);
         }
         break;
