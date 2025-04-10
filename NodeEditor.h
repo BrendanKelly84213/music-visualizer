@@ -15,6 +15,7 @@ enum NodeType {
     Add,
     Sin,
     Output,
+    Debug,
 };
 
 struct Node {
@@ -43,6 +44,9 @@ private:
             struct {
                 int input;
             } sin;
+            struct {
+                int input;
+            } debug;
         } ui;
     };
 
