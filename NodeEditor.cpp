@@ -31,6 +31,8 @@ static std::string node_type_enum_to_string(Node const& node)
         return "Output";
     case Debug:
         return "Debug";
+    case NodeType::StaticValue:
+        return "StaticValue";
     default: break;
     }
     return "Unknown";
@@ -211,6 +213,10 @@ static ImU32 evaluate(const Graph<Node>& graph, int root)
             }
         }
         break;
+        case NodeType::StaticValue: {
+            value_stack.push(node.value);
+        }
+        break;
         default: break;
         }
     }
@@ -299,10 +305,36 @@ void NodeEditor::onFrame()
             m_nodes.push_back(node);
             ImNodes::SetNodeScreenSpacePos(node.id, click_pos);
         }
+
         if (ImGui::MenuItem("time")) {
             Node operation {.type = NodeType::Time };
             UiNode node {};
             node.type = NodeType::Time;
+            node.id = m_graph.insert_node(operation);
+            m_nodes.push_back(node);
+            ImNodes::SetNodeScreenSpacePos(node.id, click_pos);
+        }
+
+        if (ImGui::MenuItem("noise-shader")) {
+            Node value {.type = NodeType::Value, .value = 0.0f };
+            Node operation {.type = NodeType::NoiseShader };
+
+            UiNode node {};
+            node.type = NodeType::NoiseShader;
+            node.ui.noise_shader.time = m_graph.insert_node({.type = NodeType::Value});
+            node.ui.noise_shader.resolution = m_graph.insert_node(value);
+            node.ui.noise_shader.scale = m_graph.insert_node(value);
+            node.ui.noise_shader.mouse = m_graph.insert_node(value);
+
+            node.id = m_graph.insert_node(operation);
+            m_nodes.push_back(node);
+            ImNodes::SetNodeScreenSpacePos(node.id, click_pos);
+        }
+
+        if (ImGui::MenuItem("static-value")) {
+            Node operation {.type = NodeType::StaticValue };
+            UiNode node {};
+            node.type = NodeType::StaticValue;
             node.id = m_graph.insert_node(operation);
             m_nodes.push_back(node);
             ImNodes::SetNodeScreenSpacePos(node.id, click_pos);
@@ -361,6 +393,48 @@ void NodeEditor::onFrame()
             ImGui::TextUnformatted("time");
             ImNodes::EndOutputAttribute();
             ImNodes::EndNode();
+            break;
+        case NoiseShader:
+            ImNodes::BeginNode(node.id);
+            ImNodes::BeginNodeTitleBar();
+            ImGui::TextUnformatted("noise-shader");
+            ImNodes::EndNodeTitleBar();
+
+            ImNodes::BeginInputAttribute(node.ui.noise_shader.time);
+            ImGui::TextUnformatted("time");
+            ImNodes::EndInputAttribute();
+            ImNodes::BeginInputAttribute(node.ui.noise_shader.resolution);
+            ImGui::TextUnformatted("resolution");
+            ImNodes::EndInputAttribute();
+            ImNodes::BeginInputAttribute(node.ui.noise_shader.scale);
+            ImGui::TextUnformatted("scale");
+            ImNodes::EndInputAttribute();
+            ImNodes::BeginInputAttribute(node.ui.noise_shader.mouse);
+            ImGui::TextUnformatted("mouse");
+            ImNodes::EndInputAttribute();
+
+            ImNodes::BeginOutputAttribute(node.id);
+            ImGui::TextUnformatted("result");
+            ImNodes::EndOutputAttribute();
+            ImNodes::EndNode();
+            break;
+        case StaticValue: {
+            ImNodes::BeginNode(node.id);
+            ImNodes::BeginNodeTitleBar();
+            ImGui::TextUnformatted("static-value");
+            ImNodes::EndNodeTitleBar();
+
+            ImNodes::BeginStaticAttribute(node.id);
+            ImGui::PushItemWidth(120.0f);
+            ImGui::DragFloat("value", &m_graph.node_ptr(node.id)->value, 0.01f);
+            ImNodes::EndStaticAttribute();
+            ImGui::PopItemWidth();
+
+            ImNodes::BeginOutputAttribute(node.id);
+            ImNodes::EndOutputAttribute();
+            ImNodes::EndNode();
+        }
+            break;
         default:
             break;
         }

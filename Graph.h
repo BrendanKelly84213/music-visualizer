@@ -37,6 +37,13 @@ public:
         return id;
     }
 
+    NodeType* node_ptr(int id)
+    {
+        auto it = m_nodes.find(id);
+        assert(it != m_nodes.end());
+        return &it->second;
+    }
+
     const NodeType& node(int id) const
     {
         auto it = m_nodes.find(id);

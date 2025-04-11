@@ -16,6 +16,8 @@ enum NodeType {
     Sin,
     Output,
     Debug,
+    NoiseShader,
+    StaticValue,
 };
 
 struct Node {
@@ -47,6 +49,9 @@ private:
             struct {
                 int input;
             } debug;
+            struct {
+                int time, resolution, scale, mouse;
+            } noise_shader;
         } ui;
     };
 
