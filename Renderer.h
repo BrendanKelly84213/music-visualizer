@@ -26,6 +26,12 @@ public:
         m_shaders[name] = Shader::create();
         return m_shaders[name]->load(vertexShaderPath, fragmentShaderPath);
     }
+    Result<std::shared_ptr<Shader>> loadShader(const std::string& name, const std::string& fragmentShaderPath)
+    {
+        m_shaders[name] = Shader::create();
+        return m_shaders[name]->loadDefaultVertex(s_quadVertexShaderSrc, fragmentShaderPath);
+    }
+
     [[nodiscard]] std::shared_ptr<IndexBuffer> indexBuffer() const { return m_indexBuffer; }
     bool shaderLoaded(const std::string& name)
     {
@@ -36,6 +42,10 @@ public:
         }
         return false;
     }
+
+    std::shared_ptr<VertexBuffer> vertexBuffer() const { return m_vertexBuffer; }
+    std::shared_ptr<VertexArray> vertexArray() const { return m_vertexArray; }
+
 private:
     std::unordered_map<std::string, std::shared_ptr<Shader>> m_shaders;
     std::shared_ptr<VertexArray> m_vertexArray {};

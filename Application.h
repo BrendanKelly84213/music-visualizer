@@ -43,7 +43,7 @@ private:
     Window m_window;
     GUI m_gui;
     std::shared_ptr<FrameBuffer> m_framebuffer;
-    std::unique_ptr<Renderer> m_renderer;
+    std::shared_ptr<Renderer> m_renderer;
 };
 
 

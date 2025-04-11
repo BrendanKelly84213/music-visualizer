@@ -17,8 +17,9 @@
 
 class GUI {
 public:
+    GUI() { }
     ~GUI();
-    void init(const Window& window, std::shared_ptr<FrameBuffer> const& frame_buffer);
+    void init(const Window& window, std::shared_ptr<FrameBuffer> const& frame_buffer, std::shared_ptr<Renderer> const& renderer);
     void debug();
     static void render();
     void newFrame();
@@ -28,6 +29,7 @@ public:
 private:
     NodeEditor m_nodeEditor;
     std::shared_ptr<FrameBuffer> m_framebuffer;
+    std::shared_ptr<Renderer> m_renderer;
 };
 
 #endif //GUI_H

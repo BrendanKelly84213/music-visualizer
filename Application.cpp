@@ -17,12 +17,16 @@ bool Application::init()
     }
 
     m_framebuffer = FrameBuffer::create();
+    if (m_framebuffer == nullptr) {
+        std::cout << "FrameBuffer is null\n";
+        return false;
+    }
     m_renderer = Renderer::create();
     if (m_renderer == nullptr) {
         std::cout << "Renderer is null\n";
         return false;
     }
-    m_gui.init(m_window, m_framebuffer);
+    m_gui.init(m_window, m_framebuffer, m_renderer);
     return true;
 }
 
@@ -46,19 +50,10 @@ void Application::getInputs()
 void Application::render()
 {
     m_gui.newFrame();
-    m_framebuffer->bind();
 
     RenderCommand::setClearColor({0.0,0.0,0.1, 1.0});
     RenderCommand::clear();
 
-    // FIXME: Temporary debugging thing. In the future outputs can should represent anything graphical...
-    auto color = m_gui.nodeEditor().output();
-    m_renderer->drawQuad({0.5, 0.5}, {0, 0}, glm::vec4{color & 0x000000FF,color & 0x0000FF00,color & 0x00FF0000, 1});
-    RenderCommand::drawIndexed(6);
-    m_framebuffer->unbind();
-
-    RenderCommand::setClearColor({0.0,0.0,0.0, 1.0});
-    RenderCommand::clear();
     GUI::render();
 
     glfwSwapBuffers(m_window.ptr());

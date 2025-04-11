@@ -3,10 +3,15 @@
 //
 
 #include "NodeEditor.h"
+#include "FrameBuffer.h"
+#include "RenderCommand.h"
+#include "Shader.h"
 #include <GLFW/glfw3.h>
 #include <cmath>
 #include <iostream>
-NodeEditor::NodeEditor() : m_root_node_id(-1)
+NodeEditor::NodeEditor()
+    : m_root_node_id(-1),
+    m_framebuffer(nullptr)
 {
     ImNodes::CreateContext();
 }
@@ -33,6 +38,8 @@ static std::string node_type_enum_to_string(Node const& node)
         return "Debug";
     case NodeType::StaticValue:
         return "StaticValue";
+    case NodeType::NoiseShader:
+        return "NoiseShader";
     default: break;
     }
     return "Unknown";
@@ -164,7 +171,15 @@ void drawToScreen(const RenderState& state) {
 
                                            This approach should integrate well with your existing graph logic and allow you to implement a flexible graphical pipeline.
  */
-static ImU32 evaluate(const Graph<Node>& graph, int root)
+
+struct RenderState {
+    std::shared_ptr<Shader> current_shader;
+    std::shared_ptr<FrameBuffer> framebuffer;
+    std::shared_ptr<Renderer> renderer;
+    // Add rendering-related state as needed
+};
+
+static ImU32 evaluate(const Graph<Node>& graph, int root, RenderState& state)
 {
     std::stack<int> postorder;
     dfs_traverse(graph, root, [&postorder](int node_id) {
@@ -196,7 +211,7 @@ static ImU32 evaluate(const Graph<Node>& graph, int root)
         case NodeType::Sin: {
             const float x = value_stack.top();
             value_stack.pop();
-            const float res = std::abs(std::sin(x));
+            const float res = std::sin(x);
             value_stack.push(res);
         }
         break;
@@ -204,6 +219,7 @@ static ImU32 evaluate(const Graph<Node>& graph, int root)
             value_stack.push(static_cast<float>(glfwGetTime()));
         }
         break;
+        // I still don't get this
         case NodeType::Value: {
             // If the edge does not have an edge connecting to another node, then just use the value
             // at this node. It means the node's input pin has not been connected to anything and
@@ -217,6 +233,63 @@ static ImU32 evaluate(const Graph<Node>& graph, int root)
             value_stack.push(node.value);
         }
         break;
+        case NodeType::NoiseShader: {
+            float u_scale = value_stack.top();
+            value_stack.pop();
+            float u_time = value_stack.top();
+            value_stack.pop();
+            ImGui::Text("u_time: %f, u_scale: %f", u_time, u_scale);
+            ImGui::Begin("output window");
+            {
+                auto size = ImGui::GetContentRegionAvail();
+                auto pos = ImGui::GetCursorScreenPos();
+                unsigned int colorBufferId = state.framebuffer->textureColorBuffer();
+                state.framebuffer->rescale((int)size.x, (int)size.y);
+                ImGui::GetWindowDrawList()->AddImage((void*)colorBufferId, pos, {pos.x + size.x, pos.y + size.y}, {0, 1}, {1,0});
+
+                if (state.framebuffer == nullptr) {
+                    ImGui::Text("framebuffer is null");
+                    ImGui::End();
+                    return 0;
+                }
+                state.framebuffer->bind();
+
+                auto err = state.renderer->loadShader("noise-shader", "/home/brendan/dev/my-stuff/music-visualizer/assets/shaders/vertex-shader.glsl", "/home/brendan/dev/my-stuff/music-visualizer/assets/shaders/noise-fragment-shader.glsl");
+                if (err.isError()) {
+                    ImGui::Text("error loading shader: %s", err.error().message().c_str());
+                    ImGui::End();
+                    return 0;
+                }
+
+                state.current_shader = err.value();
+                if (!state.current_shader->loaded()) {
+                    ImGui::Text("error loading shader");
+                    ImGui::End();
+                    return 0;
+                }
+
+                // FIXME: rework this API
+                state.current_shader->use();
+                state.current_shader->setUniform1f("u_time", u_time);
+                state.current_shader->setUniform1f("u_scale", u_scale);
+                state.current_shader->setUniform2f("u_resolution", float(size.x), float(size.y));
+                state.current_shader->setUniformMat4f("u_transform", glm::mat4(1.0f));
+
+
+                RenderCommand::setClearColor({0.0,0.0,0.1, 1.0});
+                RenderCommand::clear();
+
+                state.renderer->vertexBuffer()->setLayout({
+                    {VertexLayoutType::Float3, "aPos"}
+                });
+
+                state.renderer->vertexArray()->addVertexBuffer(state.renderer->vertexBuffer());
+                RenderCommand::drawIndexed(6);
+                state.framebuffer->unbind();
+                ImGui::End();
+            }
+        }
+        break;
         default: break;
         }
     }
@@ -226,11 +299,14 @@ static ImU32 evaluate(const Graph<Node>& graph, int root)
         ImGui::Text("value: %f", value_stack.top());
         value_stack.pop();
     }
+
     return 0;
 }
 
 void NodeEditor::onFrame()
 {
+    static RenderState state {};
+
     ImGui::Begin("node editor");
     ImNodes::BeginNodeEditor();
 
@@ -316,17 +392,26 @@ void NodeEditor::onFrame()
         }
 
         if (ImGui::MenuItem("noise-shader")) {
+            if (m_framebuffer != nullptr) {
+                state.framebuffer = m_framebuffer;
+            }
+            if (m_renderer != nullptr) {
+                state.renderer = m_renderer;
+            }
+
             Node value {.type = NodeType::Value, .value = 0.0f };
             Node operation {.type = NodeType::NoiseShader };
 
             UiNode node {};
             node.type = NodeType::NoiseShader;
-            node.ui.noise_shader.time = m_graph.insert_node({.type = NodeType::Value});
-            node.ui.noise_shader.resolution = m_graph.insert_node(value);
+            node.ui.noise_shader.time = m_graph.insert_node(value);
             node.ui.noise_shader.scale = m_graph.insert_node(value);
-            node.ui.noise_shader.mouse = m_graph.insert_node(value);
 
             node.id = m_graph.insert_node(operation);
+
+            m_graph.insert_edge(node.id, node.ui.noise_shader.time);
+            m_graph.insert_edge(node.id, node.ui.noise_shader.scale);
+
             m_nodes.push_back(node);
             ImNodes::SetNodeScreenSpacePos(node.id, click_pos);
         }
@@ -403,14 +488,8 @@ void NodeEditor::onFrame()
             ImNodes::BeginInputAttribute(node.ui.noise_shader.time);
             ImGui::TextUnformatted("time");
             ImNodes::EndInputAttribute();
-            ImNodes::BeginInputAttribute(node.ui.noise_shader.resolution);
-            ImGui::TextUnformatted("resolution");
-            ImNodes::EndInputAttribute();
             ImNodes::BeginInputAttribute(node.ui.noise_shader.scale);
             ImGui::TextUnformatted("scale");
-            ImNodes::EndInputAttribute();
-            ImNodes::BeginInputAttribute(node.ui.noise_shader.mouse);
-            ImGui::TextUnformatted("mouse");
             ImNodes::EndInputAttribute();
 
             ImNodes::BeginOutputAttribute(node.id);
@@ -470,6 +549,6 @@ void NodeEditor::onFrame()
     ImGui::End();
 
     // Evaluate the graph
-    m_output = m_root_node_id != -1 ? evaluate(m_graph, m_root_node_id) : 0;
+    m_output = m_root_node_id != -1 ? evaluate(m_graph, m_root_node_id, state) : 0;
 }
 

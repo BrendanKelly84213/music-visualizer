@@ -5,9 +5,12 @@
 #ifndef NODEEDITOR_H
 #define NODEEDITOR_H
 
-#include <vector>
-#include "imnodes.h"
+#include "FrameBuffer.h"
 #include "Graph.h"
+#include "Renderer.h"
+#include "imnodes.h"
+#include <memory>
+#include <vector>
 
 enum NodeType {
     Value,
@@ -18,6 +21,7 @@ enum NodeType {
     Debug,
     NoiseShader,
     StaticValue,
+    ShaderProgram,
 };
 
 struct Node {
@@ -30,6 +34,14 @@ public:
     NodeEditor();
     ~NodeEditor();
     void onFrame();
+
+    void setFrameBuffer(std::shared_ptr<FrameBuffer> const& framebuffer) {
+        m_framebuffer = framebuffer;
+    }
+
+    void setRenderer(std::shared_ptr<Renderer> const& renderer) {
+        m_renderer = renderer;
+    }
 
     ImU32 output() const { return m_output; }
 private:
@@ -50,7 +62,8 @@ private:
                 int input;
             } debug;
             struct {
-                int time, resolution, scale, mouse;
+                int time, scale;
+
             } noise_shader;
         } ui;
     };
@@ -59,6 +72,8 @@ private:
     ImU32 m_output {};
     Graph<Node> m_graph {};
     std::vector<UiNode> m_nodes {};
+    std::shared_ptr<FrameBuffer> m_framebuffer {};
+    std::shared_ptr<Renderer> m_renderer {};
 };
 
 
