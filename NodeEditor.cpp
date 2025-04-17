@@ -239,55 +239,94 @@ static ImU32 evaluate(const Graph<Node>& graph, int root, RenderState& state)
             float u_time = value_stack.top();
             value_stack.pop();
             ImGui::Text("u_time: %f, u_scale: %f", u_time, u_scale);
-            ImGui::Begin("output window");
-            {
-                auto size = ImGui::GetContentRegionAvail();
-                auto pos = ImGui::GetCursorScreenPos();
-                unsigned int colorBufferId = state.framebuffer->textureColorBuffer();
-                state.framebuffer->rescale((int)size.x, (int)size.y);
-                ImGui::GetWindowDrawList()->AddImage((void*)colorBufferId, pos, {pos.x + size.x, pos.y + size.y}, {0, 1}, {1,0});
 
-                if (state.framebuffer == nullptr) {
-                    ImGui::Text("framebuffer is null");
-                    ImGui::End();
-                    return 0;
-                }
-                state.framebuffer->bind();
-
-                auto err = state.renderer->loadShader("noise-shader", "/home/brendan/dev/my-stuff/music-visualizer/assets/shaders/vertex-shader.glsl", "/home/brendan/dev/my-stuff/music-visualizer/assets/shaders/noise-fragment-shader.glsl");
-                if (err.isError()) {
-                    ImGui::Text("error loading shader: %s", err.error().message().c_str());
-                    ImGui::End();
-                    return 0;
-                }
-
-                state.current_shader = err.value();
-                if (!state.current_shader->loaded()) {
-                    ImGui::Text("error loading shader");
-                    ImGui::End();
-                    return 0;
-                }
-
-                // FIXME: rework this API
-                state.current_shader->use();
-                state.current_shader->setUniform1f("u_time", u_time);
-                state.current_shader->setUniform1f("u_scale", u_scale);
-                state.current_shader->setUniform2f("u_resolution", float(size.x), float(size.y));
-                state.current_shader->setUniformMat4f("u_transform", glm::mat4(1.0f));
-
-
-                RenderCommand::setClearColor({0.0,0.0,0.1, 1.0});
-                RenderCommand::clear();
-
-                state.renderer->vertexBuffer()->setLayout({
-                    {VertexLayoutType::Float3, "aPos"}
-                });
-
-                state.renderer->vertexArray()->addVertexBuffer(state.renderer->vertexBuffer());
-                RenderCommand::drawIndexed(6);
-                state.framebuffer->unbind();
+            auto err = state.renderer->loadShader("noise-shader", "/home/brendan/dev/my-stuff/music-visualizer/assets/shaders/vertex-shader.glsl", "/home/brendan/dev/my-stuff/music-visualizer/assets/shaders/noise-fragment-shader.glsl");
+            if (err.isError()) {
+                ImGui::Text("error loading shader: %s", err.error().message().c_str());
                 ImGui::End();
+                return 0;
             }
+
+            state.current_shader = err.value();
+            if (!state.current_shader->loaded()) {
+                ImGui::Text("error loading shader");
+                ImGui::End();
+                return 0;
+            }
+
+            // FIXME: rework this API
+            state.current_shader->use();
+            state.current_shader->setUniform1f("u_time", u_time);
+            state.current_shader->setUniform1f("u_scale", u_scale);
+            state.current_shader->setUniform2f("u_resolution", float(state.framebuffer->width()), float(state.framebuffer->height()));
+            state.current_shader->setUniformMat4f("u_transform", glm::mat4(1.0f));
+
+            RenderCommand::setClearColor({0.0,0.0,0.1, 1.0});
+            RenderCommand::clear();
+
+            state.renderer->vertexBuffer()->setLayout({
+                {VertexLayoutType::Float3, "aPos"}
+            });
+
+            // What the fuck is this bro
+            state.renderer->vertexArray()->addVertexBuffer(state.renderer->vertexBuffer());
+        }
+        break;
+        case NodeType::FunnyLiquidShader: {
+            float u_time = value_stack.top();
+            value_stack.pop();
+            // Properties
+            float u_lacunarity = value_stack.top();
+            value_stack.pop();
+            float u_octaves = value_stack.top();
+            value_stack.pop();
+            float u_gain = value_stack.top();
+            // Initial values
+            float u_initialAmplitude = value_stack.top();
+            value_stack.pop();
+            float u_initialFrequency = value_stack.top();
+            value_stack.pop();
+            float u_speed = value_stack.top();
+            value_stack.pop();
+            float u_something = value_stack.top();
+            value_stack.pop();
+
+            auto err = state.renderer->loadShader("noise-shader", "/home/brendan/dev/my-stuff/music-visualizer/assets/shaders/vertex-shader.glsl", "/home/brendan/dev/my-stuff/music-visualizer/assets/shaders/fbm-funny-liquid.glsl");
+            if (err.isError()) {
+                ImGui::Text("error loading shader: %s", err.error().message().c_str());
+                ImGui::End();
+                return 0;
+            }
+
+            state.current_shader = err.value();
+            if (!state.current_shader->loaded()) {
+                ImGui::Text("error loading shader");
+                ImGui::End();
+                return 0;
+            }
+
+            // FIXME: rework this API
+            state.current_shader->use();
+            state.current_shader->setUniform1f("u_time", u_time);
+            state.current_shader->setUniform1f("u_lacunarity", u_lacunarity);
+            state.current_shader->setUniform1f("u_octaves", u_octaves);
+            state.current_shader->setUniform1f("u_gain", u_gain);
+            state.current_shader->setUniform1f("u_initialAmplitude", u_initialAmplitude);
+            state.current_shader->setUniform1f("u_initialFrequency", u_initialFrequency);
+            state.current_shader->setUniform1f("u_speed", u_speed);
+            state.current_shader->setUniform1f("u_something", u_something);
+            state.current_shader->setUniform2f("u_resolution", float(state.framebuffer->width()), float(state.framebuffer->height()));
+            state.current_shader->setUniformMat4f("u_transform", glm::mat4(1.0f));
+
+            RenderCommand::setClearColor({0.0,0.0,0.1, 1.0});
+            RenderCommand::clear();
+
+            state.renderer->vertexBuffer()->setLayout({
+                {VertexLayoutType::Float3, "aPos"}
+            });
+
+            // What the fuck is this bro
+            state.renderer->vertexArray()->addVertexBuffer(state.renderer->vertexBuffer());
         }
         break;
         default: break;
@@ -298,6 +337,33 @@ static ImU32 evaluate(const Graph<Node>& graph, int root, RenderState& state)
     while (!value_stack.empty()) {
         ImGui::Text("value: %f", value_stack.top());
         value_stack.pop();
+    }
+
+    // Output is always the root node so we don't bother putting it in the switch statement
+    ImGui::Begin("output window");
+    {
+        if (state.framebuffer == nullptr) {
+            ImGui::Text("framebuffer is null");
+            ImGui::End();
+            return 0;
+        }
+        auto size = ImGui::GetContentRegionAvail();
+        auto pos = ImGui::GetCursorScreenPos();
+        unsigned int colorBufferId = state.framebuffer->textureColorBuffer();
+        state.framebuffer->rescale((int)size.x, (int)size.y);
+        ImGui::GetWindowDrawList()->AddImage((void*)colorBufferId, pos, {pos.x + size.x, pos.y + size.y}, {0, 1}, {1,0});
+
+        if (state.framebuffer == nullptr) {
+            ImGui::Text("framebuffer is null");
+            ImGui::End();
+            return 0;
+        }
+        state.framebuffer->bind();
+        // FIXME: Make more flexible? I don't know how this is gonna look in the future tbh
+        // But it'd be nice to be able to draw more than one shader or whatever...
+        RenderCommand::drawIndexed(6);
+        state.framebuffer->unbind();
+        ImGui::End();
     }
 
     return 0;
@@ -416,6 +482,45 @@ void NodeEditor::onFrame()
             ImNodes::SetNodeScreenSpacePos(node.id, click_pos);
         }
 
+        if (ImGui::MenuItem("funny-liquid")) {
+            if (m_framebuffer != nullptr) {
+                state.framebuffer = m_framebuffer;
+            }
+            if (m_renderer != nullptr) {
+                state.renderer = m_renderer;
+            }
+
+            Node operation {.type = NodeType::FunnyLiquidShader };
+
+            UiNode node {};
+            node.type = NodeType::FunnyLiquidShader;
+
+            // Create input nodes for each uniform
+            node.ui.funny_liquid_shader.time = m_graph.insert_node({.type = NodeType::Value, .value = 0.0f});
+            node.ui.funny_liquid_shader.lacunarity = m_graph.insert_node({.type = NodeType::Value, .value = 2.0f});
+            node.ui.funny_liquid_shader.octaves = m_graph.insert_node({.type = NodeType::Value, .value = 4.0f});
+            node.ui.funny_liquid_shader.gain = m_graph.insert_node({.type = NodeType::Value, .value = 0.5f});
+            node.ui.funny_liquid_shader.initial_amplitude = m_graph.insert_node({.type = NodeType::Value, .value = 1.0f});
+            node.ui.funny_liquid_shader.initial_frequency = m_graph.insert_node({.type = NodeType::Value, .value = 1.0f});
+            node.ui.funny_liquid_shader.speed = m_graph.insert_node({.type = NodeType::Value, .value = 1.0f});
+            node.ui.funny_liquid_shader.something = m_graph.insert_node({.type = NodeType::Value, .value = 1.0f});
+
+            node.id = m_graph.insert_node(operation);
+
+            // Connect inputs to the FunnyLiquidShader node
+            m_graph.insert_edge(node.id, node.ui.funny_liquid_shader.time);
+            m_graph.insert_edge(node.id, node.ui.funny_liquid_shader.lacunarity);
+            m_graph.insert_edge(node.id, node.ui.funny_liquid_shader.octaves);
+            m_graph.insert_edge(node.id, node.ui.funny_liquid_shader.gain);
+            m_graph.insert_edge(node.id, node.ui.funny_liquid_shader.initial_amplitude);
+            m_graph.insert_edge(node.id, node.ui.funny_liquid_shader.initial_frequency);
+            m_graph.insert_edge(node.id, node.ui.funny_liquid_shader.speed);
+            m_graph.insert_edge(node.id, node.ui.funny_liquid_shader.something);
+
+            m_nodes.push_back(node);
+            ImNodes::SetNodeScreenSpacePos(node.id, click_pos);
+        }
+
         if (ImGui::MenuItem("static-value")) {
             Node operation {.type = NodeType::StaticValue };
             UiNode node {};
@@ -513,6 +618,49 @@ void NodeEditor::onFrame()
             ImNodes::EndOutputAttribute();
             ImNodes::EndNode();
         }
+        break;
+        case FunnyLiquidShader:
+            ImNodes::BeginNode(node.id);
+            ImNodes::BeginNodeTitleBar();
+            ImGui::TextUnformatted("funny-liquid");
+            ImNodes::EndNodeTitleBar();
+
+            ImNodes::BeginInputAttribute(node.ui.funny_liquid_shader.time);
+            ImGui::TextUnformatted("time");
+            ImNodes::EndInputAttribute();
+
+            ImNodes::BeginInputAttribute(node.ui.funny_liquid_shader.lacunarity);
+            ImGui::TextUnformatted("lacunarity");
+            ImNodes::EndInputAttribute();
+
+            ImNodes::BeginInputAttribute(node.ui.funny_liquid_shader.octaves);
+            ImGui::TextUnformatted("octaves");
+            ImNodes::EndInputAttribute();
+
+            ImNodes::BeginInputAttribute(node.ui.funny_liquid_shader.gain);
+            ImGui::TextUnformatted("gain");
+            ImNodes::EndInputAttribute();
+
+            ImNodes::BeginInputAttribute(node.ui.funny_liquid_shader.initial_amplitude);
+            ImGui::TextUnformatted("initial_amplitude");
+            ImNodes::EndInputAttribute();
+
+            ImNodes::BeginInputAttribute(node.ui.funny_liquid_shader.initial_frequency);
+            ImGui::TextUnformatted("initial_frequency");
+            ImNodes::EndInputAttribute();
+
+            ImNodes::BeginInputAttribute(node.ui.funny_liquid_shader.speed);
+            ImGui::TextUnformatted("speed");
+            ImNodes::EndInputAttribute();
+
+            ImNodes::BeginInputAttribute(node.ui.funny_liquid_shader.something);
+            ImGui::TextUnformatted("something");
+            ImNodes::EndInputAttribute();
+
+            ImNodes::BeginOutputAttribute(node.id);
+            ImGui::TextUnformatted("result");
+            ImNodes::EndOutputAttribute();
+            ImNodes::EndNode();
             break;
         default:
             break;

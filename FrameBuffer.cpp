@@ -6,7 +6,7 @@
 #include "glad/glad.h"
 std::unique_ptr<FrameBuffer> FrameBuffer::create()
 {
-    auto frameBuffer = std::make_unique<FrameBuffer>();
+    auto frameBuffer = std::make_unique<FrameBuffer>(800, 600);
     glGenFramebuffers(1, &frameBuffer->m_id);
     glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer->m_id);
 
@@ -14,7 +14,7 @@ std::unique_ptr<FrameBuffer> FrameBuffer::create()
     // TODO: Should really refactor to seperate texture class
     glGenTextures(1, &frameBuffer->m_textureColorBuffer);
     glBindTexture(GL_TEXTURE_2D, frameBuffer->m_textureColorBuffer);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 800, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, frameBuffer->width(), frameBuffer->height(), 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -44,8 +44,10 @@ void FrameBuffer::unbind()
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void FrameBuffer::rescale(int width, int height) const
+void FrameBuffer::rescale(int width, int height)
 {
+    m_width = width;
+    m_height = height;
     glBindTexture(GL_TEXTURE_2D, m_textureColorBuffer);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);

@@ -22,6 +22,7 @@ enum NodeType {
     NoiseShader,
     StaticValue,
     ShaderProgram,
+    FunnyLiquidShader,
 };
 
 struct Node {
@@ -65,6 +66,16 @@ private:
                 int time, scale;
 
             } noise_shader;
+            struct {
+                float time;
+                float lacunarity;
+                int octaves;
+                float gain;
+                float initial_amplitude;
+                float initial_frequency;
+                float speed;
+                float something;
+            } funny_liquid_shader;
         } ui;
     };
 
