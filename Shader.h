@@ -23,6 +23,7 @@ public:
     int compileShader(const std::string& source, unsigned int typeFlag);
     int linkProgram(unsigned int vertexShader, unsigned int fragmentShader);
     Result<std::shared_ptr<Shader>> load(const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
+    Result<std::shared_ptr<Shader>> loadDefaultVertex(const std::string& vertexShaderSource, const std::string& fragmentShaderPath);
     Result<std::shared_ptr<Shader>> loadFromRaw(const std::string &vertexShaderCode, const std::string &fragmentShaderCode);
 
     void setUniform1f(const std::string& name, float value) const;

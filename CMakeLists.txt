@@ -19,6 +19,7 @@ pkg_search_module(FFTW REQUIRED fftw3 IMPORTED_TARGET)
 link_directories("${PROJECT_SOURCE_DIR}/external/glad/src")
 include_directories("${PROJECT_SOURCE_DIR}/external/glad/include/")
 include_directories("external/imgui")
+include_directories("external/imnodes")
 
 add_executable(music-visualizer main.cpp
         ${PROJECT_SOURCE_DIR}/external/glad/src/glad.c
@@ -58,6 +59,9 @@ add_executable(music-visualizer main.cpp
         external/imgui/imgui_widgets.cpp
         external/imgui/backends/imgui_impl_glfw.cpp
         external/imgui/backends/imgui_impl_opengl3.cpp
+        external/imnodes/imnodes.cpp
+        external/imnodes/imnodes.h
+        external/imnodes/imnodes_internal.h
         GUI.cpp
         GUI.h
         Spectrum.cpp
@@ -67,6 +71,12 @@ add_executable(music-visualizer main.cpp
         config.h
         Application.cpp
         Application.h
+        Graph.cpp
+        Graph.h
+        NodeEditor.cpp
+        NodeEditor.h
+        FrameBuffer.cpp
+        FrameBuffer.h
 )
 
 target_link_libraries(music-visualizer glfw ${OpenGlLinkers} ${SDL_Linkers} ${LibSndFileLinkers} ${fftwLinkers})

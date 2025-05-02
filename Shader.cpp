@@ -68,16 +68,25 @@ Result<std::shared_ptr<Shader>> Shader::load(const std::string &vertexShaderPath
     return loadFromRaw(vertexShaderCode, fragmentShaderCode);
 }
 
+Result<std::shared_ptr<Shader>> Shader::loadDefaultVertex(const std::string& vertexShaderSource, const std::string &fragmentShaderPath)
+{
+    std::string fragmentShaderCode = readFileToString(fragmentShaderPath);
+
+    return loadFromRaw(vertexShaderSource, fragmentShaderCode);
+}
+
 Result<std::shared_ptr<Shader>> Shader::loadFromRaw(const std::string& vertexShaderCode, const std::string& fragmentShaderCode)
 {
     int vertexShader = compileShader(vertexShaderCode, GL_VERTEX_SHADER);
     if (vertexShader < 0) {
-        return Error("Failed to compile vertexShader: " + std::string(m_infoLog));
+        return Error("Failed to compile vertexShader: " + std::string(m_infoLog) +
+                     "\nVertex Shader Code:\n" + vertexShaderCode);
     }
 
     int fragmentShader = compileShader(fragmentShaderCode, GL_FRAGMENT_SHADER);
     if (fragmentShader < 0) {
-        return Error("Failed to compile fragmentShader: " + std::string(m_infoLog));
+        return Error("Failed to compile fragmentShader: " + std::string(m_infoLog) +
+                     "\nFragment Shader Code:\n" + fragmentShaderCode);
     }
 
     m_id = linkProgram(vertexShader, fragmentShader);
@@ -113,6 +122,3 @@ void Shader::setUniformMat4f(const std::string &name, const glm::mat4 &value) co
     auto location = glGetUniformLocation(m_id, name.c_str());
     glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
 }
-
-
-

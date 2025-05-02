@@ -24,6 +24,7 @@
 #include "imgui.h"
 #include "PerlinNoise.h"
 #include "config.h"
+#include "FrameBuffer.h"
 
 
 class Application {
@@ -34,14 +35,15 @@ public:
     }
 
     bool init();
-
     int run();
 private:
+    void getInputs();
+    void render();
+
     Window m_window;
     GUI m_gui;
-    std::shared_ptr<Music> m_music;
+    std::shared_ptr<FrameBuffer> m_framebuffer;
     std::shared_ptr<Renderer> m_renderer;
-
 };
 
 

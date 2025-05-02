@@ -36,11 +36,18 @@ std::string Renderer::s_quadFragmentShaderSrc = R"(
     }
 )";
 
+//float Renderer::s_quadVertices[12] = {
+//    0.5f, 0.5f, 0.0f, // top right
+//    0.5f, -0.5f, 0.0f, // bottom right
+//    -0.5f, -0.5f, 0.0f, // bottom left
+//    -0.5f, 0.5f, 0.0f // top left
+//};
+
 float Renderer::s_quadVertices[12] = {
-    0.5f, 0.5f, 0.0f, // top right
-    0.5f, -0.5f, 0.0f, // bottom right
-    -0.5f, -0.5f, 0.0f, // bottom left
-    -0.5f, 0.5f, 0.0f // top left
+    1.0f, 1.0f, 0.0f,   // top right
+    1.0f, -1.0f, 0.0f,  // bottom right
+    -1.0f, -1.0f, 0.0f, // bottom left
+    -1.0f, 1.0f, 0.0f   // top left
 };
 
 unsigned int Renderer::s_quadIndices[6] = {
@@ -48,9 +55,9 @@ unsigned int Renderer::s_quadIndices[6] = {
     1, 2, 3    // second triangle
 };
 
-std::shared_ptr<Renderer> Renderer::create()
+std::unique_ptr<Renderer> Renderer::create()
 {
-    auto renderer = std::make_shared<Renderer>(Renderer());
+    auto renderer = std::make_unique<Renderer>(Renderer());
     auto defaultShader = Shader::create();
     auto result = defaultShader->loadFromRaw(s_quadVertexShaderSrc, s_quadFragmentShaderSrc);
     if (result.isError()) {
