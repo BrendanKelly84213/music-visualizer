@@ -5,6 +5,7 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 
+#include <algorithm>
 #include <cassert>
 #include <stack>
 #include <unordered_map>
@@ -33,6 +34,7 @@ public:
         if (m_node_neighbours[from_id].empty()) {
             m_node_neighbours[from_id] = std::vector<int>{};
         }
+        m_edges_from_node[from_id] += 1;
         m_node_neighbours[from_id].push_back(to_id);
         return id;
     }
@@ -54,6 +56,49 @@ public:
     std::unordered_map<int, Edge> const& edges()
     {
         return m_edges;
+    }
+
+    // TODO: Implement
+    void erase_edge(const int id)
+    {
+        auto it = m_edges.find(id);
+        assert(it != m_edges.end());
+        const Edge& edge = it->second;
+        m_edges.erase(it);
+
+        // update neighbor count
+        auto from_it = m_edges_from_node.find(edge.from);
+        assert(from_it != m_edges_from_node.end());
+        from_it->second -= 1;
+
+        // update neighbor list
+        auto neighbors_it = m_node_neighbours.find(edge.from);
+        assert(neighbors_it != m_node_neighbours.end());
+        auto& neighbors = neighbors_it->second;
+        neighbors.erase(std::remove(neighbors.begin(), neighbors.end(), edge.to), neighbors.end());
+    }
+
+    // TODO: Implement
+    void erase_node(const int id)
+    {
+        auto it = m_nodes.find(id);
+        assert(it != m_nodes.end());
+        m_nodes.erase(it);
+
+        // remove all edges from this node
+        auto neighbors_it = m_node_neighbours.find(id);
+        if (neighbors_it != m_node_neighbours.end()) {
+            for (int neighbor : neighbors_it->second) {
+                erase_edge(neighbor);
+            }
+            m_node_neighbours.erase(neighbors_it);
+        }
+
+        // remove the node from the edges
+        auto edges_it = m_edges_from_node.find(id);
+        if (edges_it != m_edges_from_node.end()) {
+            m_edges_from_node.erase(edges_it);
+        }
     }
 
     std::vector<int> neighbors(int id) const
@@ -79,6 +124,7 @@ private:
     std::unordered_map<int, NodeType> m_nodes {};
     std::unordered_map<int, Edge> m_edges {};
     std::unordered_map<int, std::vector<int>> m_node_neighbours {};
+    std::unordered_map<int, int> m_edges_from_node {};
 };
 
 template<typename NodeType, typename Visitor>

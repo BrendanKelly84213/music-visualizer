@@ -64,17 +64,16 @@ private:
             } debug;
             struct {
                 int time, scale;
-
             } noise_shader;
             struct {
-                float time;
-                float lacunarity;
+                int time;
+                int lacunarity;
                 int octaves;
-                float gain;
-                float initial_amplitude;
-                float initial_frequency;
-                float speed;
-                float something;
+                int gain;
+                int initial_amplitude;
+                int initial_frequency;
+                int speed;
+                int something;
             } funny_liquid_shader;
         } ui;
     };

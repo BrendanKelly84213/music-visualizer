@@ -7,6 +7,7 @@
 #include "RenderCommand.h"
 #include "Shader.h"
 #include <GLFW/glfw3.h>
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 NodeEditor::NodeEditor()
@@ -680,6 +681,7 @@ void NodeEditor::onFrame()
 
     ImNodes::EndNodeEditor();
 
+    // Handle neew nodes
     int start_attribute, end_attribute;
     if (ImNodes::IsLinkCreated(&start_attribute, &end_attribute)) {
         NodeType start_type = m_graph.node(start_attribute).type;
@@ -691,6 +693,65 @@ void NodeEditor::onFrame()
             }
 
             m_graph.insert_edge(start_attribute, end_attribute);
+        }
+    }
+
+    // Handle deleted nodes and edgese
+    {
+        int link_id;
+        if (ImNodes::IsLinkDestroyed(&link_id))
+        {
+            m_graph.erase_edge(link_id);
+        }
+    }
+
+    {
+        const int num_selected = ImNodes::NumSelectedLinks();
+        if (num_selected > 0 && ImGui::IsKeyReleased(ImGuiKey_X))
+        {
+            static std::vector<int> selected_links;
+            selected_links.resize(static_cast<size_t>(num_selected));
+            ImNodes::GetSelectedLinks(selected_links.data());
+            for (const int edge_id : selected_links)
+            {
+                m_graph.erase_edge(edge_id);
+            }
+        }
+    }
+
+    {
+        const int num_selected = ImNodes::NumSelectedNodes();
+        if (num_selected > 0 && ImGui::IsKeyReleased(ImGuiKey_X))
+        {
+            static std::vector<int> selected_nodes;
+            selected_nodes.resize(static_cast<size_t>(num_selected));
+            ImNodes::GetSelectedNodes(selected_nodes.data());
+            for (const int node_id : selected_nodes)
+            {
+                m_graph.erase_node(node_id);
+                auto iter = std::find_if(
+                    m_nodes.begin(), m_nodes.end(), [node_id](const UiNode& node) -> bool {
+                        return node.id == node_id;
+                    });
+                // Erase any additional internal nodes
+                switch (iter->type)
+                {
+                case NodeType::Add:
+                    m_graph.erase_node(iter->ui.add.lhs);
+                    m_graph.erase_node(iter->ui.add.rhs);
+                    break;
+                case NodeType::Output:
+                    m_graph.erase_node(iter->ui.output.input);
+                    m_root_node_id = -1;
+                    break;
+                case NodeType::Sin:
+                    m_graph.erase_node(iter->ui.sin.input);
+                    break;
+                default:
+                    break;
+                }
+                m_nodes.erase(iter);
+            }
         }
     }
 
