@@ -31,3 +31,11 @@ window_t* window_create(int width, int height, const char* title)
 
     return window;
 }
+
+void window_destroy(window_t* window)
+{
+    if (window != NULL) {
+        glfwDestroyWindow(window->glfw_window);
+        free(window);
+    }
+}

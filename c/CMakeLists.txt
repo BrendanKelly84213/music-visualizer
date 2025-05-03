@@ -24,11 +24,19 @@ add_executable(rework
     main.c
         application.h
         application.c
-        renderer.c
-        renderer.h
-        window.c
-        window.h
-        external/glad/src/glad.c)
+        renderer/renderer.c
+        renderer/renderer.h
+        renderer/window.c
+        renderer/window.h
+        external/glad/src/glad.c
+        renderer/shader.c
+        renderer/shader.h
+        renderer/vertex_buffer.c
+        renderer/vertex_buffer.h
+        renderer/index_buffer.c
+        renderer/index_buffer.h
+        renderer/vertex_array.c
+        renderer/vertex_array.h)
 
 # Link required libraries
 target_link_libraries(rework

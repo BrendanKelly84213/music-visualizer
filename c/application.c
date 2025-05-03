@@ -2,14 +2,14 @@
 // Created by brendan on 5/2/25.
 //
 
-#include "application.h"
 #include <glad/glad.h>
-#include "window.h"
-#include "renderer.h"
 #include <stdio.h>
 
-typedef struct
-{
+#include "application.h"
+#include "renderer/renderer.h"
+#include "renderer/window.h"
+
+typedef struct {
     window_t* window;
     renderer_t* renderer;
 } application_context_t;
@@ -50,8 +50,8 @@ static void application_render()
 {
     glClearColor(0, 0, 0, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//    glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, indices);
-
+    //    glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, indices);
+    renderer_draw_quad(g_application_context.renderer, 0, 0, 1, 1);
     glfwSwapBuffers(g_application_context.window->glfw_window);
 }
 
@@ -61,5 +61,8 @@ void application_run()
         application_get_inputs();
         application_render();
     }
-}
 
+    window_destroy(g_application_context.window);
+    renderer_destroy(g_application_context.renderer);
+    glfwTerminate();
+}
