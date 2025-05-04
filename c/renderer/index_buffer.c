@@ -6,7 +6,7 @@
 #include "index_buffer.h"
 #include <stdio.h>
 
-index_buffer_id_t ib_create(unsigned int* indices, unsigned int count)
+index_buffer_id_t ib_create(unsigned int const* indices, unsigned int count)
 {
     index_buffer_id_t id = 0;
     glGenBuffers(1, &id);

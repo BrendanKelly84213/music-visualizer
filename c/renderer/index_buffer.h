@@ -7,7 +7,7 @@
 
 typedef unsigned int index_buffer_id_t;
 
-index_buffer_id_t ib_create(unsigned int* indices, unsigned int count);
+index_buffer_id_t ib_create(unsigned int const* indices, unsigned int count);
 void ib_destroy(index_buffer_id_t ib);
 void ib_bind(index_buffer_id_t ib);
 void ib_unbind(index_buffer_id_t ib);

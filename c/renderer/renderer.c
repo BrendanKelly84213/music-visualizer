@@ -29,7 +29,7 @@ static float const quad_vertices[12] = {
     -1.0f, 1.0f, 0.0f   // top left
 };
 
-unsigned int quad_indices[6] = {
+static unsigned int const quad_indices[6] = {
     0, 1, 3, // first triangle
     1, 2, 3  // second triangle
 };
