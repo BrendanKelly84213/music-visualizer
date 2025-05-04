@@ -5,6 +5,7 @@
 #include "shader.h"
 #include "vertex_array.h"
 #include "vertex_buffer.h"
+#include "cglm/cglm.h"
 
 typedef struct {
     shader_t* quad_shader;
@@ -15,6 +16,7 @@ typedef struct {
 
 renderer_t* renderer_create();
 void renderer_destroy(renderer_t* renderer);
-void renderer_draw_quad(renderer_t* renderer, float x, float y, float width, float height);
+void renderer_draw_quad(renderer_t* renderer, vec4 color, vec3 dimensions, vec3 position);
+void renderer_draw_transform_quad(renderer_t* renderer, vec4 color, mat4 transform);
 
 #endif

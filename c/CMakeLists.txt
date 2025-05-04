@@ -19,6 +19,7 @@ pkg_search_module(FFTW REQUIRED fftw3 IMPORTED_TARGET)
 
 link_directories("${PROJECT_SOURCE_DIR}/external/glad/src")
 include_directories("${PROJECT_SOURCE_DIR}/external/glad/include/")
+include_directories("${PROJECT_SOURCE_DIR}/external/cglm/include/")
 
 add_executable(rework
     main.c

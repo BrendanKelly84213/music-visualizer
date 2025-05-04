@@ -66,10 +66,36 @@ shader_t* shader_load_from_raw(char const* vertex_shader, char const* fragment_s
 
     return shader;
 }
+
 void shader_destroy(shader_t* shader)
 {
     if (shader != NULL) {
         glDeleteProgram(shader->id);
         free(shader);
+    }
+}
+
+void shader_use(shader_t* shader)
+{
+    glUseProgram(shader->id);
+}
+
+void shader_set_uniform4f(shader_t* shader, char const* name, vec4 value)
+{
+    int location = glGetUniformLocation(shader->id, name);
+    if (location != -1) {
+        glUniform4fv(location, 1, value);
+    } else {
+        fprintf(stderr, "Warning: uniform '%s' not found in shader program\n", name);
+    }
+}
+
+void shader_set_uniform_mat4f(shader_t* shader, char const* name, mat4 value)
+{
+    int location = glGetUniformLocation(shader->id, name);
+    if (location != -1) {
+        glUniformMatrix4fv(location, 1, GL_FALSE, (const GLfloat*)value);
+    } else {
+        fprintf(stderr, "Warning: uniform '%s' not found in shader program\n", name);
     }
 }

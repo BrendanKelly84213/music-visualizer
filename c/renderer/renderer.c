@@ -46,6 +46,21 @@ renderer_t* renderer_create(void)
         return NULL;
     }
 
+    renderer->vertex_array = va_create();
+    if (renderer->vertex_array == NULL) {
+        printf("Failed to create vertex array\n");
+        shader_destroy(renderer->quad_shader);
+        return NULL;
+    }
+
+    renderer->vertex_buffer = vb_create(quad_vertices, sizeof(quad_vertices));
+    if (renderer->vertex_buffer == NULL) {
+        printf("Failed to create vertex buffer\n");
+        va_destroy(renderer->vertex_array);
+        shader_destroy(renderer->quad_shader);
+        return NULL;
+    }
+
     return renderer;
 }
 
@@ -57,6 +72,36 @@ void renderer_destroy(renderer_t* renderer)
         free(renderer);
     }
 }
-void renderer_draw_quad(renderer_t* renderer, float x, float y, float width, float height)
+
+void renderer_draw_quad(renderer_t* renderer, vec4 color, vec3 dimensions, vec3 position)
 {
+    mat4 transform = GLM_MAT4_IDENTITY_INIT;
+    glm_translate(transform, position);
+    glm_scale(transform, dimensions);
+    renderer_draw_transform_quad(renderer, color, transform);
+}
+
+void renderer_draw_transform_quad(renderer_t* renderer, vec4 color, mat4 transform)
+{
+    shader_use(renderer->quad_shader);
+    shader_set_uniform4f(renderer->quad_shader, "u_color", color);
+    shader_set_uniform_mat4f(renderer->quad_shader, "u_transform", transform);
+
+    renderer->vertex_buffer->layout = (vertex_layout_t*)malloc(sizeof(vertex_layout_t));
+    if (renderer->vertex_buffer->layout == NULL) {
+        return;
+    }
+
+    renderer->vertex_buffer->layout->count = 1;
+    renderer->vertex_buffer->layout->attributes = (vertex_attribute_t*)malloc(sizeof(vertex_attribute_t) * renderer->vertex_buffer->layout->count);
+    renderer->vertex_buffer->layout->attributes[0] = (vertex_attribute_t) {
+        .type = GL_FLOAT,
+        .count = 3,
+        .normalized = GL_FALSE,
+        .size = sizeof(float) * 3,
+        .offset = 0
+    };
+
+    layout_calculate_stride(renderer->vertex_buffer->layout);
+    va_add_vb(renderer->vertex_array, renderer->vertex_buffer);
 }
