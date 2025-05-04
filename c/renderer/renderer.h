@@ -11,7 +11,7 @@ typedef struct {
     shader_t* quad_shader;
     vertex_array_t* vertex_array;
     vertex_buffer_t* vertex_buffer;
-    index_buffer_t* index_buffer;
+    index_buffer_id_t index_buffer;
 } renderer_t;
 
 renderer_t* renderer_create();

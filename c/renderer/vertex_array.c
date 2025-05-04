@@ -13,6 +13,7 @@ vertex_array_t* va_create()
     }
 
     glGenVertexArrays(1, &va->id);
+    glBindVertexArray(va->id);
     return va;
 }
 

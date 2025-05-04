@@ -1,5 +1,6 @@
 #include "renderer.h"
 #include <malloc.h>
+#include <string.h>
 
 static char const* quad_vertex_shader_src = "#version 330 core\n"
                                             "layout (location = 0) in vec3 aPos;\n"
@@ -28,7 +29,7 @@ static float const quad_vertices[12] = {
     -1.0f, 1.0f, 0.0f   // top left
 };
 
-static unsigned int const quad_indices[6] = {
+unsigned int quad_indices[6] = {
     0, 1, 3, // first triangle
     1, 2, 3  // second triangle
 };
@@ -56,6 +57,15 @@ renderer_t* renderer_create(void)
     renderer->vertex_buffer = vb_create(quad_vertices, sizeof(quad_vertices));
     if (renderer->vertex_buffer == NULL) {
         printf("Failed to create vertex buffer\n");
+        va_destroy(renderer->vertex_array);
+        shader_destroy(renderer->quad_shader);
+        return NULL;
+    }
+
+    renderer->index_buffer = ib_create(quad_indices, 6);
+    if (renderer->index_buffer == 0) {
+        printf("Failed to create index buffer\n");
+        vb_destroy(renderer->vertex_buffer);
         va_destroy(renderer->vertex_array);
         shader_destroy(renderer->quad_shader);
         return NULL;

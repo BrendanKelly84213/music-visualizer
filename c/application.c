@@ -50,12 +50,12 @@ static void application_render()
 {
     glClearColor(0, 0, 0, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    //    glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, indices);
     renderer_draw_quad(g_application_context.renderer,
         (vec4) { 0.0f, 0.0f, 1.0f, 1.0f },
         (vec3) { 1.0f, 1.0f, 1.0f },
         (vec3) { 0.0f, 0.0f, 0.0f });
 
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     glfwSwapBuffers(g_application_context.window->glfw_window);
 }
 

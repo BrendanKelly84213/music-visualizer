@@ -7,6 +7,7 @@ set(SDL_Linkers -lSDL2 -lSDL2_mixer)
 set(LibSndFileLinkers -lsndfile)
 set(fftwLinkers -lfftw3 -lm)
 
+add_compile_options(-Wall -Werror)
 
 find_package(glfw3 3.3 REQUIRED)
 find_package(glm REQUIRED)
@@ -20,6 +21,8 @@ pkg_search_module(FFTW REQUIRED fftw3 IMPORTED_TARGET)
 link_directories("${PROJECT_SOURCE_DIR}/external/glad/src")
 include_directories("${PROJECT_SOURCE_DIR}/external/glad/include/")
 include_directories("${PROJECT_SOURCE_DIR}/external/cglm/include/")
+
+set(CMAKE_BUILD_TYPE Debug)
 
 add_executable(rework
     main.c
