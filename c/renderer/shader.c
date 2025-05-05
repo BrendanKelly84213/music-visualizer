@@ -44,45 +44,37 @@ static int shader_link_program(int vertex_shader_id, int fragment_shader_id)
     return program_id;
 }
 
-shader_t* shader_load_from_raw(char const* vertex_shader, char const* fragment_shader)
+shader_id_t shader_load_from_raw(char const* vertex_shader, char const* fragment_shader)
 {
-    shader_t* shader = malloc(sizeof(shader_t));
+    shader_id_t id = 0;
 
     int vertex_shader_id = shader_compile(vertex_shader, GL_VERTEX_SHADER);
     if (vertex_shader_id == -1) {
         fprintf(stderr, "Failed to compile vertex shader\n");
-        return NULL;
+        return 0;
     }
 
     int fragment_shader_id = shader_compile(fragment_shader, GL_FRAGMENT_SHADER);
     if (fragment_shader_id == -1) {
         fprintf(stderr, "Failed to compile fragment shader\n");
-        return NULL;
+        return 0;
     }
 
-    shader->id = shader_link_program(vertex_shader_id, fragment_shader_id);
+    id = shader_link_program(vertex_shader_id, fragment_shader_id);
     glDeleteShader(vertex_shader_id);
     glDeleteShader(fragment_shader_id);
 
-    return shader;
+    return id;
 }
 
-void shader_destroy(shader_t* shader)
+void shader_use(shader_id_t shader_id)
 {
-    if (shader != NULL) {
-        glDeleteProgram(shader->id);
-        free(shader);
-    }
+    glUseProgram(shader_id);
 }
 
-void shader_use(shader_t* shader)
+void shader_set_uniform4f(shader_id_t shader_id, char const* name, vec4 value)
 {
-    glUseProgram(shader->id);
-}
-
-void shader_set_uniform4f(shader_t* shader, char const* name, vec4 value)
-{
-    int location = glGetUniformLocation(shader->id, name);
+    int location = glGetUniformLocation(shader_id, name);
     if (location != -1) {
         glUniform4fv(location, 1, value);
     } else {
@@ -90,9 +82,9 @@ void shader_set_uniform4f(shader_t* shader, char const* name, vec4 value)
     }
 }
 
-void shader_set_uniform_mat4f(shader_t* shader, char const* name, mat4 value)
+void shader_set_uniform_mat4f(shader_id_t shader_id, char const* name, mat4 value)
 {
-    int location = glGetUniformLocation(shader->id, name);
+    int location = glGetUniformLocation(shader_id, name);
     if (location != -1) {
         glUniformMatrix4fv(location, 1, GL_FALSE, (const GLfloat*)value);
     } else {

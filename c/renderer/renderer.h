@@ -8,8 +8,8 @@
 #include "cglm/cglm.h"
 
 typedef struct {
-    shader_t* quad_shader;
-    vertex_array_t* vertex_array;
+    shader_id_t quad_shader;
+    vertex_array_id_t vertex_array;
     vertex_buffer_t* vertex_buffer;
     index_buffer_id_t index_buffer;
 } renderer_t;

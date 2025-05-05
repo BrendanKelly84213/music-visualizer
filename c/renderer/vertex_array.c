@@ -5,37 +5,32 @@
 #include "vertex_array.h"
 #include <malloc.h>
 
-vertex_array_t* va_create()
+vertex_array_id_t va_create()
 {
-    vertex_array_t* va = (vertex_array_t*)malloc(sizeof(vertex_array_t));
-    if (!va) {
-        return NULL;
-    }
-
-    glGenVertexArrays(1, &va->id);
-    glBindVertexArray(va->id);
-    return va;
+    vertex_array_id_t id = 0;
+    glGenVertexArrays(1, &id);
+    glBindVertexArray(id);
+    return id;
 }
 
-void va_destroy(vertex_array_t* va)
+void va_destroy(vertex_array_id_t va_id)
 {
-    if (va) {
-        glDeleteVertexArrays(1, &va->id);
-        free(va);
+    if (va_id) {
+        glDeleteVertexArrays(1, &va_id);
     }
 }
 
-void va_bind(vertex_array_t* va)
+void va_bind(vertex_array_id_t va_id)
 {
-    glBindVertexArray(va->id);
+    glBindVertexArray(va_id);
 }
 
-void va_unbind(vertex_array_t* va)
+void va_unbind(vertex_array_id_t va)
 {
     glBindVertexArray(0);
 }
 
-void va_add_vb(vertex_array_t* va, vertex_buffer_t* vb)
+void va_add_vb(vertex_array_id_t va, vertex_buffer_t* vb)
 {
     va_bind(va);
     vb_bind(vb);

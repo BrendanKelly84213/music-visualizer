@@ -42,15 +42,14 @@ renderer_t* renderer_create(void)
     }
 
     renderer->quad_shader = shader_load_from_raw(quad_vertex_shader_src, quad_fragment_shader_src);
-    if (renderer->quad_shader == NULL) {
+    if (renderer->quad_shader == 0) {
         printf("Failed to load shader\n");
         return NULL;
     }
 
     renderer->vertex_array = va_create();
-    if (renderer->vertex_array == NULL) {
+    if (renderer->vertex_array == 0) {
         printf("Failed to create vertex array\n");
-        shader_destroy(renderer->quad_shader);
         return NULL;
     }
 
@@ -58,7 +57,6 @@ renderer_t* renderer_create(void)
     if (renderer->vertex_buffer == NULL) {
         printf("Failed to create vertex buffer\n");
         va_destroy(renderer->vertex_array);
-        shader_destroy(renderer->quad_shader);
         return NULL;
     }
 
@@ -67,7 +65,6 @@ renderer_t* renderer_create(void)
         printf("Failed to create index buffer\n");
         vb_destroy(renderer->vertex_buffer);
         va_destroy(renderer->vertex_array);
-        shader_destroy(renderer->quad_shader);
         return NULL;
     }
 
@@ -77,8 +74,6 @@ renderer_t* renderer_create(void)
 void renderer_destroy(renderer_t* renderer)
 {
     if (renderer != NULL) {
-        // Clean up OpenGL context and other resources here
-        shader_destroy(renderer->quad_shader);
         free(renderer);
     }
 }
