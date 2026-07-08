@@ -10,7 +10,7 @@ std::shared_ptr<PerlinNoise> PerlinNoise::create()
     auto instance = std::make_shared<PerlinNoise>();
     instance->m_shader = Shader::create();
 
-    std::string root = LOCAL_PATH("assets/shaders/");
+    std::string root = std::string(PROJECT_ROOT) + "assets/shaders/";
     instance->m_vertexShaderPath = root + "vertex-shader.glsl";
     instance->m_fragmentShaderPath = root + "smoke-fragment-shader.glsl";
     return instance;

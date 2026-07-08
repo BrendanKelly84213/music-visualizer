@@ -21,6 +21,8 @@ include_directories("${PROJECT_SOURCE_DIR}/external/glad/include/")
 include_directories("external/imgui")
 include_directories("external/imnodes")
 
+add_compile_definitions(PROJECT_ROOT="${CMAKE_CURRENT_SOURCE_DIR}")
+
 add_executable(music-visualizer main.cpp
         ${PROJECT_SOURCE_DIR}/external/glad/src/glad.c
         IndexBuffer.h

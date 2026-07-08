@@ -4,7 +4,7 @@
 
 #ifndef CONFIG_H
 #define CONFIG_H
+#include <string>
 
-#define PROJECT_ROOT "/home/brendan/dev/my-stuff/music-visualizer/"
-#define LOCAL_PATH(path) (std::string(PROJECT_ROOT) + path)
+#define LOCAL_PATH(str) std::string(PROJECT_ROOT) + str
 #endif //CONFIG_H

@@ -6,6 +6,8 @@
 #include "FrameBuffer.h"
 #include "RenderCommand.h"
 #include "Shader.h"
+#include "config.h"
+
 #include <GLFW/glfw3.h>
 #include <algorithm>
 #include <cmath>
@@ -115,9 +117,12 @@ static ImU32 evaluate(const Graph<Node>& graph, int root, RenderState& state)
             ImGui::Text("u_time: %f, u_scale: %f", u_time, u_scale);
 
             // FIXME: it's time to make this dynamic. Finally hit the wall with this hardcodeded business
-            auto err = state.renderer->loadShader("noise-shader", "/home/brendan/dev/my-stuff/music-visualizer/assets/shaders/vertex-shader.glsl", "/home/brendan/dev/my-stuff/music-visualizer/assets/shaders/noise-fragment-shader.glsl");
+            auto const  root = std::string(PROJECT_ROOT) + "/assets/shaders/";
+            auto const vertex_path = root + "vertex-shader.glsl";
+            auto const fragment_path = root + "smoke-fragment-shader.glsl";
+            auto err = state.renderer->loadShader("noise-shader", vertex_path, fragment_path);
             if (err.isError()) {
-                ImGui::Text("error loading shader: %s", err.error().message().c_str());
+                ImGui::Text("error loading shader noise-shader at vertex: %s, fragment: %s: %s", vertex_path.c_str(), fragment_path.c_str(), err.error().message().c_str());
                 return 0;
             }
 
@@ -163,7 +168,10 @@ static ImU32 evaluate(const Graph<Node>& graph, int root, RenderState& state)
             float u_something = value_stack.top();
             value_stack.pop();
 
-            auto err = state.renderer->loadShader("noise-shader", "/home/brendan/dev/my-stuff/music-visualizer/assets/shaders/vertex-shader.glsl", "/home/brendan/dev/my-stuff/music-visualizer/assets/shaders/fbm-funny-liquid.glsl");
+            auto const  root = std::string(PROJECT_ROOT) + "/assets/shaders/";
+            auto const vertex_path = root + "vertex-shader.glsl";
+            auto const fragment_path = root + "fbm-funny-liquid.glsl";
+            auto err = state.renderer->loadShader("noise-shader", vertex_path, fragment_path);
             if (err.isError()) {
                 ImGui::Text("error loading shader: %s", err.error().message().c_str());
                 return 0;
