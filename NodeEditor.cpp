@@ -46,133 +46,6 @@ static std::string node_type_enum_to_string(Node const& node)
     return "Unknown";
 }
 
-// This function traverses the graph in a depth-first manner and pushes the node ids onto the stack
-// The function evaluates nodes as numerical values and is called when the root node is set (currently when the user creates an 'output' node)
-// In the future we might want different types of output nodes, graphical, sound, etc... from one graph
-// The key thing to understand is that the evaluate function could be called from any root.
-// Currently this "evaluate" function acts as a debug function to show the values of the nodes
-// If we wanted to have a graphical output node, the evaluation function would evaluate the graph treating that node as root.
-// Creating that node would spawn a little output window and scale a framebuffer. Whatever node is immediately connected to the output node
-// Would be what is drawn to the window. In touch designer I think it just figures out what the best way to do draw what is connected...
-// We would have to come up with our own rules about what to draw, how to best graphically represent "sin" for example
-// So the output node should have some kind of internal logic about what is drawn and how to draw it.
-// If it is at all possible to abstract values into something that can be drawn to the point where it can
-// Be any scene, this would be ideal. That way the output node would not need any knowledge about what it is connected to
-//
-
-// COPILOT:
-/*
- * Yes, what you're trying to do is possible, and there are abstractions you can use to simplify the process. The key is to design a system that decouples the evaluation of the node graph from the rendering logic. Here's how you can approach it:
-
-### 1. **Abstract Node Evaluation**
-   - Each node in your graph should have a well-defined interface for evaluation. For example, a `Node` could have a method like `evaluate()` that computes its value based on its inputs.
-   - The `evaluate()` method can return a generic data structure (e.g., a `Variant` type or a union) that represents the result, whether it's a numerical value, a texture, or a shader program.
-
-### 2. **Output Node as a Renderer**
-   - Treat the output node as a renderer. Instead of directly evaluating the graph for a numerical value, the output node could evaluate its inputs and use the result to configure a rendering pipeline.
-   - For example, if the output node is connected to a "Sin" node, it could use the evaluated value to modify a shader uniform or generate a texture.
-
-### 3. **Graphical Representation**
-   - Use a common abstraction for rendering, such as a `RenderTarget` or `FrameBuffer`, to represent the output of the graph. Each node could contribute to this target by drawing its result or modifying the state of the rendering pipeline.
-   - For example, a "Sin" node could generate a texture that represents a sine wave, and the output node could composite this texture onto the screen.
-
-### 4. **Shader Support**
-   - Nodes that require shader support (e.g., procedural textures or effects) can encapsulate their logic in a shader program. The node's `evaluate()` method could compile and return a shader or set up the necessary uniforms for rendering.
-
-### 5. **Dynamic Rendering Rules**
-   - To avoid hardcoding logic for each type of node, you can use a system of "rendering rules" or "node handlers." Each node type could register a handler that knows how to evaluate and render that node.
-   - For example, a "Sin" node handler could generate a texture, while an "Add" node handler could combine two textures.
-
-### 6. **Example Workflow**
-   - Traverse the graph to evaluate all nodes, starting from the root (output node).
-   - Each node contributes its result to a `RenderTarget` or modifies the rendering pipeline.
-   - The output node takes the final result and draws it to the screen.
-
-### 7. **Tools and Libraries**
-   - Use libraries like ImGui and ImNodes for the UI and graph editing.
-   - Use OpenGL or Vulkan for rendering, with abstractions like `Shader`, `FrameBuffer`, and `RenderCommand` to manage the pipeline.
-
-By designing your system with these abstractions, you can avoid hardcoding complex logic for each node type and make your graph extensible and flexible for different types of outputs.
-
- Yes, it is possible to implement the graphical pipeline using your current DFS traversal logic with a "visitor" callback. However, as you mentioned, the value stack method is more suited for numerical evaluation and would need to be adapted for graphical rendering. Instead of pushing numerical values onto a stack, you would propagate rendering commands or state changes through the graph.
-
-Here’s how you might approach it:
-
-   ### Key Changes
-   1. **State Propagation**: Replace the value stack with a rendering state object that gets modified as you traverse the graph. This state could include shader programs, textures, transformation matrices, etc.
-       2. **Node Handlers**: Each node type should have a handler that knows how to modify the rendering state or issue rendering commands.
-       3. **Output Node**: The output node would finalize the rendering by drawing to the screen or a framebuffer.
-
-       ### Pseudo Code Example
-           Here’s a high-level pseudo code example:
-
-```cpp
-   struct RenderState {
-   Shader* currentShader;
-   Texture* currentTexture;
-   glm::mat4 transform;
-   // Add other rendering-related state as needed
-};
-
-void evaluateGraphForRendering(const Graph<Node>& graph, int root, RenderState& state) {
-   std::stack<int> postorder;
-   dfs_traverse(graph, root, [&postorder](int node_id) {
-       postorder.push(node_id);
-   });
-
-   while (!postorder.empty()) {
-       int node_id = postorder.top();
-       postorder.pop();
-       const Node& node = graph.node(node_id);
-
-       switch (node.type) {
-       case NodeType::Value:
-           // Set a uniform or texture based on the value
-           state.currentShader->setUniform1f("u_value", node.value);
-           break;
-
-       case NodeType::Sin:
-           // Modify the state to apply a sine wave effect
-           state.currentShader->setUniform1f("u_sinEffect", std::sin(node.value));
-           break;
-
-       case NodeType::Add:
-           // Combine two textures or values
-           combineTextures(state.currentTexture, node.input1, node.input2);
-           break;
-
-       case NodeType::Output:
-           // Finalize rendering
-           drawToScreen(state);
-           break;
-
-       default:
-           break;
-       }
-   }
-}
-
-void drawToScreen(const RenderState& state) {
-   // Bind the shader, set uniforms, and draw the final output
-   state.currentShader->use();
-   state.currentTexture->bind();
-   RenderCommand::drawIndexed(6);
-}
-```
-
-   ### Explanation
-   1. **RenderState**: This struct holds the current rendering state, such as the active shader, texture, and transformation matrix.
-         2. **DFS Traversal**: The graph is traversed in postorder, ensuring that inputs are processed before their dependent nodes.
-       3. **Node Handlers**: Each node type modifies the `RenderState` or issues rendering commands. For example, a `Sin` node might set a shader uniform, while an `Add` node might combine two textures.
-       4. **Output Node**: The output node uses the final state to render the result to the screen or a framebuffer.
-
-       ### Benefits
-       - **Flexibility**: The rendering logic is decoupled from the graph structure, making it easier to add new node types.
-   - **Extensibility**: You can extend the `RenderState` and node handlers to support more complex rendering features, such as procedural textures or post-processing effects.
-
-                                           This approach should integrate well with your existing graph logic and allow you to implement a flexible graphical pipeline.
- */
-
 struct RenderState {
     std::shared_ptr<Shader> current_shader;
     std::shared_ptr<FrameBuffer> framebuffer;
@@ -241,17 +114,16 @@ static ImU32 evaluate(const Graph<Node>& graph, int root, RenderState& state)
             value_stack.pop();
             ImGui::Text("u_time: %f, u_scale: %f", u_time, u_scale);
 
+            // FIXME: it's time to make this dynamic. Finally hit the wall with this hardcodeded business
             auto err = state.renderer->loadShader("noise-shader", "/home/brendan/dev/my-stuff/music-visualizer/assets/shaders/vertex-shader.glsl", "/home/brendan/dev/my-stuff/music-visualizer/assets/shaders/noise-fragment-shader.glsl");
             if (err.isError()) {
                 ImGui::Text("error loading shader: %s", err.error().message().c_str());
-                ImGui::End();
                 return 0;
             }
 
             state.current_shader = err.value();
             if (!state.current_shader->loaded()) {
                 ImGui::Text("error loading shader");
-                ImGui::End();
                 return 0;
             }
 
@@ -269,7 +141,6 @@ static ImU32 evaluate(const Graph<Node>& graph, int root, RenderState& state)
                 {VertexLayoutType::Float3, "aPos"}
             });
 
-            // What the fuck is this bro
             state.renderer->vertexArray()->addVertexBuffer(state.renderer->vertexBuffer());
         }
         break;
@@ -295,14 +166,12 @@ static ImU32 evaluate(const Graph<Node>& graph, int root, RenderState& state)
             auto err = state.renderer->loadShader("noise-shader", "/home/brendan/dev/my-stuff/music-visualizer/assets/shaders/vertex-shader.glsl", "/home/brendan/dev/my-stuff/music-visualizer/assets/shaders/fbm-funny-liquid.glsl");
             if (err.isError()) {
                 ImGui::Text("error loading shader: %s", err.error().message().c_str());
-                ImGui::End();
                 return 0;
             }
 
             state.current_shader = err.value();
             if (!state.current_shader->loaded()) {
                 ImGui::Text("error loading shader");
-                ImGui::End();
                 return 0;
             }
 
@@ -345,7 +214,6 @@ static ImU32 evaluate(const Graph<Node>& graph, int root, RenderState& state)
     {
         if (state.framebuffer == nullptr) {
             ImGui::Text("framebuffer is null");
-            ImGui::End();
             return 0;
         }
         auto size = ImGui::GetContentRegionAvail();
@@ -356,7 +224,6 @@ static ImU32 evaluate(const Graph<Node>& graph, int root, RenderState& state)
 
         if (state.framebuffer == nullptr) {
             ImGui::Text("framebuffer is null");
-            ImGui::End();
             return 0;
         }
         state.framebuffer->bind();

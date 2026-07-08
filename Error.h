@@ -46,6 +46,7 @@ public:
     T&& value() { return std::move(*m_error_or_value); }
     [[nodiscard]] Error error() const { return m_error_or_value.error(); }
 private:
+    // I think I'd rather my own tagged union idk about all this 
     std::expected<T, Error> m_error_or_value {};
 };
 
