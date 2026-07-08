@@ -117,9 +117,9 @@ static ImU32 evaluate(const Graph<Node>& graph, int root, RenderState& state)
             ImGui::Text("u_time: %f, u_scale: %f", u_time, u_scale);
 
             // FIXME: it's time to make this dynamic. Finally hit the wall with this hardcodeded business
-            auto const  root = std::string(PROJECT_ROOT) + "/assets/shaders/";
-            auto const vertex_path = root + "vertex-shader.glsl";
-            auto const fragment_path = root + "smoke-fragment-shader.glsl";
+            auto const proj_root = std::string(PROJECT_ROOT) + "/assets/shaders/";
+            auto const vertex_path = proj_root + "vertex-shader.glsl";
+            auto const fragment_path = proj_root + "smoke-fragment-shader.glsl";
             auto err = state.renderer->loadShader("noise-shader", vertex_path, fragment_path);
             if (err.isError()) {
                 ImGui::Text("error loading shader noise-shader at vertex: %s, fragment: %s: %s", vertex_path.c_str(), fragment_path.c_str(), err.error().message().c_str());
@@ -168,9 +168,9 @@ static ImU32 evaluate(const Graph<Node>& graph, int root, RenderState& state)
             float u_something = value_stack.top();
             value_stack.pop();
 
-            auto const  root = std::string(PROJECT_ROOT) + "/assets/shaders/";
-            auto const vertex_path = root + "vertex-shader.glsl";
-            auto const fragment_path = root + "fbm-funny-liquid.glsl";
+            auto const proj_root = std::string(PROJECT_ROOT) + "/assets/shaders/";
+            auto const vertex_path = proj_root + "vertex-shader.glsl";
+            auto const fragment_path = proj_root + "fbm-funny-liquid.glsl";
             auto err = state.renderer->loadShader("noise-shader", vertex_path, fragment_path);
             if (err.isError()) {
                 ImGui::Text("error loading shader: %s", err.error().message().c_str());
@@ -221,9 +221,11 @@ static ImU32 evaluate(const Graph<Node>& graph, int root, RenderState& state)
     ImGui::Begin("output window");
     {
         if (state.framebuffer == nullptr) {
-            ImGui::Text("framebuffer is null");
+            ImGui::Text("framebuffer is null. Does output have an input?");
+            ImGui::End();
             return 0;
         }
+
         auto size = ImGui::GetContentRegionAvail();
         auto pos = ImGui::GetCursorScreenPos();
         unsigned int colorBufferId = state.framebuffer->textureColorBuffer();
@@ -231,9 +233,11 @@ static ImU32 evaluate(const Graph<Node>& graph, int root, RenderState& state)
         ImGui::GetWindowDrawList()->AddImage((void*)colorBufferId, pos, {pos.x + size.x, pos.y + size.y}, {0, 1}, {1,0});
 
         if (state.framebuffer == nullptr) {
-            ImGui::Text("framebuffer is null");
+            ImGui::Text("framebuffer is null. Does output have an input?");
+            ImGui::End();
             return 0;
         }
+
         state.framebuffer->bind();
         // FIXME: Make more flexible? I don't know how this is gonna look in the future tbh
         // But it'd be nice to be able to draw more than one shader or whatever...
